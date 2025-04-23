@@ -25,8 +25,8 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.DungeonMapPlayer
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
 import gg.skytils.skytilsmod.utils.*
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.PlayerSkinDrawer
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.RotationAxis
 import java.awt.Color
@@ -115,16 +115,23 @@ object RenderUtils {
                     else -> Color.BLACK
                 }
 
-                context.fill(-6, -6, 12, 12, borderColor.rgb)
+                context.fill(-6, -6, -6 + 12, -6 + 12, borderColor.rgb)
                 context.matrices.translate(0f, 0f, 0.1f)
 
                 context.matrices.push()
                 val scale = 1f - CatlasConfig.playerBorderPercentage
                 context.matrices.scale(scale, scale, scale)
-                context.drawTexture(RenderLayer::getGuiTextured, player.skin, -6, -6, 8f, 8f, 8, 8, 12, 12, 64, 64)
-                if (player.renderHat) {
-                    context.drawTexture(RenderLayer::getGuiTextured, player.skin, -6, -6, 40f, 8f, 8, 8, 12, 12, 64, 64)
-                }
+
+                PlayerSkinDrawer.draw(
+                    context,
+                    player.skin,
+                    -6,
+                    -6,
+                    12,
+                    player.renderHat,
+                    false,
+                    -1
+                )
                 context.matrices.pop()
             }
 

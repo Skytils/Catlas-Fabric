@@ -97,8 +97,8 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
                         context.fill(
                             xOffset,
                             yOffset,
-                            MapUtils.mapRoomSize,
-                            MapUtils.mapRoomSize,
+                            xOffset + MapUtils.mapRoomSize,
+                            yOffset + MapUtils.mapRoomSize,
                             tile.color.rgb
                         )
                     }
@@ -107,8 +107,8 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
                         context.fill(
                             xOffset,
                             yOffset,
-                            MapUtils.mapRoomSize + connectorSize,
-                            MapUtils.mapRoomSize + connectorSize,
+                            xOffset + MapUtils.mapRoomSize + connectorSize,
+                            yOffset + MapUtils.mapRoomSize + connectorSize,
                             tile.color.rgb
                         )
                     }
@@ -278,7 +278,7 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
         if (doorway) {
             if (vertical) y1 += doorwayOffset else x1 += doorwayOffset
         }
-        context.fill(x1, y1, if (vertical) doorWidth else width, if (vertical) width else doorWidth, color.rgb)
+        context.fill(x1, y1, x1 + if (vertical) doorWidth else width, y1 + if (vertical) width else doorWidth, color.rgb)
     }
 
     override fun render(context: DrawContext, tickCounter: RenderTickCounter) {
@@ -330,7 +330,7 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
 
     override fun demoRender(context: DrawContext, tickCounter: RenderTickCounter) {
         context.fill(0, 0, 128, 128, Color.RED.rgb)
-        context.drawCenteredTextWithShadow(fr, "Dungeon Map", 64, 5, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(fr, "Dungeon Map", (scaleX + 64).toInt(), (scaleY + 5).toInt(), 0xFFFFFF)
     }
 
     override val toggled: Boolean
