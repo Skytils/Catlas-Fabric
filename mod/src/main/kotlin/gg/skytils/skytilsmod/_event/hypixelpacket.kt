@@ -23,5 +23,3 @@ import net.hypixel.modapi.error.ErrorReason
 import net.hypixel.modapi.packet.ClientboundHypixelPacket
 
 class HypixelPacketReceiveEvent(val packet: ClientboundHypixelPacket) : Event()
-class HypixelPacketSendEvent(val type: String) : Event()
-class HypixelPacketFailedEvent(val type: String, val reason: ErrorReason) : Event()

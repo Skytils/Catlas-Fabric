@@ -26,6 +26,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures.dungeonFloor
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomType
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
+import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.formattedText
 import gg.skytils.skytilsmod.utils.stripControlCodes
@@ -97,6 +98,7 @@ object DungeonTimer : EventSubscriber {
                     )
                 ) {
                     bossEntryTime = System.currentTimeMillis()
+                    DungeonListener.markAllRevived()
                 }
             }
 
