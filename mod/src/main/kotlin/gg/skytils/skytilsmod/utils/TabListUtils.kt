@@ -21,16 +21,20 @@ package gg.skytils.skytilsmod.utils
 //$$ import com.google.common.collect.ComparisonChain
 //$$ import com.google.common.collect.Ordering
 //#endif
+//#if MC<11400
+//$$ import net.minecraft.world.level.LevelInfo
+//#else
 import gg.skytils.skytilsmod.Skytils.mc
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket
 import net.minecraft.scoreboard.Team
-//#if MC<11400
-//$$ import net.minecraft.world.level.LevelInfo
-//#else
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
+import net.minecraft.util.Nullables
 import net.minecraft.world.GameMode
+import java.util.function.Function
+import java.util.function.ToIntFunction
+
 //#endif
 
 val PlayerListEntry.text: String
@@ -80,7 +84,9 @@ object TabListUtils {
     //$$ }
     //#else
     private val comparator: Comparator<PlayerListEntry> = Comparator.comparingInt<PlayerListEntry> {
-       if (it.gameMode == GameMode.SPECTATOR) 1 else 0
+       -it.listOrder
+    }.thenComparingInt {
+        if (it.gameMode == GameMode.SPECTATOR) 1 else 0
     }.thenComparing { o ->
        o.scoreboardTeam?.name ?: ""
     }.thenComparing { o ->
