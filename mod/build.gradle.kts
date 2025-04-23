@@ -84,7 +84,7 @@ dependencies {
         include(modRuntimeOnly("gg.essential:loader-fabric:1.2.3")!!)
         modImplementation("net.fabricmc.fabric-api:fabric-api:0.99.4+1.20.6")
     }
-    modCompileOnly("gg.essential:essential-${platform}:16425+g3a090c5c88") {
+    modCompileOnly("gg.essential:essential-${if (platform.mcVersion >= 12100) "1.20.6-fabric" else platform.toString()}:17141+gd6f4cfd3a8") {
         exclude(module = "asm")
         exclude(module = "asm-commons")
         exclude(module = "asm-tree")
@@ -169,7 +169,9 @@ sourceSets {
 }
 
 val enabledVersions = setOf(
-    "1.20.4-fabric"
+    "1.20.4-fabric",
+    "1.21.4-fabric",
+    "1.21.5-fabric",
 )
 
 tasks {

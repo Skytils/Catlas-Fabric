@@ -36,10 +36,6 @@ dependencies {
 
 group = "gg.skytils.events"
 
-java.toolchain {
-    languageVersion = if (platform.mcVersion < 11600) JavaLanguageVersion.of(8) else JavaLanguageVersion.of(17)
-}
-
 loom.mixin {
     defaultRefmapName = "mixins.skytils-events.refmap.json"
 }

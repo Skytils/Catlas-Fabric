@@ -37,7 +37,7 @@ pluginManagement {
         val kotlinVersion = "1.9.22"
         kotlin("jvm") version kotlinVersion apply false
         kotlin("plugin.serialization") version kotlinVersion apply false
-        id("gg.essential.multi-version.root") version "0.6.5"
+        id("gg.essential.multi-version.root") version "0.6.7"
         id("gg.essential.loom")
         id("gg.essential.defaults")
     }
@@ -53,7 +53,9 @@ project(":events").apply {
     buildFileName = "root.gradle.kts"
 }
 listOf(
-    "1.20.4-fabric"
+    "1.20.4-fabric",
+    "1.21.4-fabric",
+    "1.21.5-fabric"
 ).forEach { version ->
     include(":events:$version")
     project(":events:$version").apply {
@@ -69,6 +71,8 @@ project(":mod").apply {
 }
 listOf(
     "1.20.4-fabric",
+    "1.21.4-fabric",
+    "1.21.5-fabric"
 ).forEach { version ->
     include(":mod:$version")
     project(":mod:$version").apply {
