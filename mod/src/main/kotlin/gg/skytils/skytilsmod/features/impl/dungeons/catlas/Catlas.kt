@@ -20,7 +20,6 @@ package gg.skytils.skytilsmod.features.impl.dungeons.catlas
 
 import gg.essential.elementa.utils.withAlpha
 import gg.essential.universal.UGraphics
-import gg.essential.universal.UMatrixStack
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.TickEvent
 import gg.skytils.event.impl.play.WorldUnloadEvent
@@ -41,15 +40,19 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MimicDetecto
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.listeners.DungeonListener.outboundRoomQueue
-import gg.skytils.skytilsmod.utils.RenderUtil
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.printDevMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexConsumer
+import net.minecraft.client.render.VertexRendering
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.FilledMapItem
 import net.minecraft.item.map.MapDecorationTypes
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket
 import net.minecraft.util.math.Box
+import net.minecraft.util.shape.VoxelShapes
 
 object Catlas : EventSubscriber {
 
@@ -124,24 +127,38 @@ object Catlas : EventSubscriber {
         DungeonInfo.dungeonList.filter {
             it is Door && it.type != DoorType.NORMAL && it.state == RoomState.DISCOVERED && !it.opened
         }.forEach {
-            val matrixStack = UMatrixStack()
             val aabb = Box(it.x - 1.0, 69.0, it.z - 1.0, it.x + 2.0, 73.0, it.z + 2.0)
-            val (viewerX, viewerY, viewerZ) = RenderUtil.getViewerPos(event.partialTicks)
 
             val color =
                 if (DungeonInfo.keys > 0) CatlasConfig.witherDoorKeyColor else CatlasConfig.witherDoorNoKeyColor
 
             UGraphics.disableDepth()
-            RenderUtil.drawOutlinedBoundingBox(
-                aabb,
-                color.withAlpha(CatlasConfig.witherDoorOutline),
-                CatlasConfig.witherDoorOutlineWidth,
-                event.partialTicks
+            val matrices = MatrixStack()
+            val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
+            VertexRendering.drawOutline(
+                matrices,
+                vertexConsumer,
+                VoxelShapes.cuboid(aabb),
+                -event.camera.pos.x,
+                -event.camera.pos.y,
+                -event.camera.pos.z,
+                color.withAlpha(CatlasConfig.witherDoorOutline).rgb
             )
-            RenderUtil.drawFilledBoundingBox(
-                matrixStack,
-                aabb.offset(-viewerX, -viewerY, -viewerZ),
-                color,
+            event.entityVertexConsumers.drawCurrentLayer()
+
+            val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getDebugFilledBox())
+            VertexRendering.drawFilledBox(
+                matrices,
+                vertexConsumer1,
+                aabb.minX,
+                aabb.minY,
+                aabb.minZ,
+                aabb.maxX,
+                aabb.maxY,
+                aabb.maxZ,
+                color.red / 255f,
+                color.blue / 255f,
+                color.green / 255f,
                 CatlasConfig.witherDoorFill
             )
             UGraphics.enableDepth()
