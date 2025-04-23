@@ -66,8 +66,8 @@ import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.util.DefaultSkinHelper
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket
 import net.minecraft.util.Identifier
 
@@ -136,15 +136,12 @@ object DungeonListener : EventSubscriber {
     fun onPacket(event: MainThreadPacketReceiveEvent<*>) {
         if (!Utils.inDungeons) return
         if (event.packet is GameMessageS2CPacket) {
-            val text = event.packet.message.method_10865()
+            val text = event.packet.content.formattedText
             val unformatted = text.stripControlCodes()
             if (event.packet.type == 2.toByte()) {
                 secretsRegex.find(text)?.destructured?.also { (secrets, maxSecrets) ->
                     val sec = secrets.toInt()
                     val max = maxSecrets.toInt().coerceAtLeast(sec)
-
-                    DungeonFeatures.DungeonSecretDisplay.secrets = sec
-                    DungeonFeatures.DungeonSecretDisplay.maxSecrets = max
 
                     run setFoundSecrets@ {
                         val tile = ScanUtils.getRoomFromPos(mc.player.blockPos)
@@ -158,9 +155,6 @@ object DungeonListener : EventSubscriber {
                         }
                     }
 
-                }.ifNull {
-                    DungeonFeatures.DungeonSecretDisplay.secrets = -1
-                    DungeonFeatures.DungeonSecretDisplay.maxSecrets = -1
                 }
             } else {
                 if (text.stripControlCodes()
@@ -171,19 +165,6 @@ object DungeonListener : EventSubscriber {
                             WSClient.sendPacketAsync(C2SPacketDungeonEnd(it))
                         }
                     }
-                    if (Skytils.config.dungeonDeathCounter) {
-                        tickTimer(6) {
-                            UChat.chat("§c☠ §lDeaths:§r ${team.values.sumOf { it.deaths }}\n${
-                                team.values.filter { it.deaths > 0 }.sortedByDescending { it.deaths }.joinToString("\n") {
-                                    "  §c☠ ${it.playerName}:§r ${it.deaths}"
-                                }
-                            }"
-                            )
-                        }
-                    }
-                    if (Skytils.config.autoRepartyOnDungeonEnd) {
-                        RepartyCommand.processCommand(mc.player, emptyArray())
-                    }
                 } else if (text.startsWith("§r§c ☠ ")) {
                     if (text.endsWith(" §r§7reconnected§r§7.§r")) {
                         val match = reconnectedRegex.find(text) ?: return
@@ -191,7 +172,7 @@ object DungeonListener : EventSubscriber {
                         disconnected.remove(username)
                     } else if (text.endsWith(" and became a ghost§r§7.§r")) {
                         val match = deathRegex.find(text) ?: return
-                        val username = match.groups["username"]?.value ?: mc.player.name
+                        val username = match.groups["username"]?.value ?: mc.player!!.gameProfile.name
                         val teammate = team[username] ?: return
                         markDead(teammate)
 
@@ -205,7 +186,6 @@ object DungeonListener : EventSubscriber {
                     val teammate = team[username] ?: return
                     markRevived(teammate)
                 } else if (text == bloodOpenedString) {
-                    SpiritLeap.doorOpener = null
                     DungeonInfo.keys--
                 } else if (text == "§r§aStarting in 1 second.§r") {
                     Skytils.launch {

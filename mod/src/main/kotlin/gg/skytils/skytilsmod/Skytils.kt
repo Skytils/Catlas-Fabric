@@ -20,8 +20,6 @@ package gg.skytils.skytilsmod
 
 import gg.essential.api.EssentialAPI
 import gg.essential.universal.UChat
-import gg.essential.universal.UDesktop
-import gg.essential.universal.UKeyboard
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.TickEvent
 import gg.skytils.event.impl.network.ClientDisconnectEvent
@@ -35,13 +33,10 @@ import gg.skytils.skytilsmod.features.impl.dungeons.*
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.Catlas
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
 import gg.skytils.skytilsmod.features.impl.handlers.*
-import gg.skytils.skytilsmod.features.impl.misc.*
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
-import gg.skytils.skytilsmod.mixins.extensions.ExtensionEntityLivingBase
-import gg.skytils.skytilsmod.mixins.hooks.entity.EntityPlayerSPHook
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
@@ -60,16 +55,12 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.screen.DeathScreen
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen
-import net.minecraft.client.option.KeyBinding
-import net.minecraft.screen.GenericContainerScreenHandler
-import net.minecraft.screen.PlayerScreenHandler
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket
-import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket
+import net.minecraft.screen.PlayerScreenHandler
 import sun.misc.Unsafe
 import java.io.File
 import java.net.DatagramPacket
@@ -85,18 +76,6 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs
-
-//#if FORGE
-//$$ import net.minecraftforge.common.MinecraftForge
-//#if MC<11400
-//$$ import net.minecraftforge.client.ClientCommandHandler
-//$$ import net.minecraftforge.fml.common.Loader
-//#endif
-//#endif
-
-//#if FABRIC
-import net.fabricmc.loader.api.FabricLoader
-//#endif
 
 object Skytils : CoroutineScope, EventSubscriber {
     const val MOD_ID = Reference.MOD_ID

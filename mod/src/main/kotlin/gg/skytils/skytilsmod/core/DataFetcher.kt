@@ -23,28 +23,16 @@ import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.client
 import gg.skytils.skytilsmod.Skytils.domain
 import gg.skytils.skytilsmod.Skytils.failPrefix
-import gg.skytils.skytilsmod.Skytils.json
-import gg.skytils.skytilsmod.features.impl.dungeons.solvers.ThreeWeirdosSolver
-import gg.skytils.skytilsmod.features.impl.dungeons.solvers.TriviaSolver
-import gg.skytils.skytilsmod.features.impl.farming.FarmingFeatures
-import gg.skytils.skytilsmod.features.impl.farming.TreasureHunterSolver
-import gg.skytils.skytilsmod.features.impl.funny.skytilsplus.SheepifyRebellion
 import gg.skytils.skytilsmod.features.impl.handlers.Mayor
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
-import gg.skytils.skytilsmod.features.impl.handlers.SpamHider
-import gg.skytils.skytilsmod.features.impl.mining.MiningFeatures
-import gg.skytils.skytilsmod.features.impl.slayer.SlayerFeatures
-import gg.skytils.skytilsmod.features.impl.spidersden.RelicWaypoints
-import gg.skytils.skytilsmod.utils.*
+import gg.skytils.skytilsmod.utils.SkillUtils
+import gg.skytils.skytilsmod.utils.Utils
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
-import net.minecraft.util.DyeColor
-import net.minecraft.util.math.BlockPos
 import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.jvm.jvmName
 
@@ -57,32 +45,6 @@ object DataFetcher {
                 get<String>("${dataUrl}constants/domain.txt") {
                     if (isNotBlank()) {
                         domain = trim()
-                    }
-                }
-                get<JsonObject>("${dataUrl}constants/enchants.json") {
-                    Utils.checkThreadAndQueue {
-                        EnchantUtil.enchants.clear()
-                        EnchantUtil.enchants.addAll(
-                            json.decodeFromJsonElement<Map<String, NormalEnchant>>(get("NORMAL")!!).values
-                        )
-                        EnchantUtil.enchants.addAll(
-                            json.decodeFromJsonElement<Map<String, NormalEnchant>>(get("ULTIMATE")!!).values
-                        )
-                        EnchantUtil.enchants.addAll(
-                            json.decodeFromJsonElement<Map<String, StackingEnchant>>(get("STACKING")!!).values
-                        )
-                    }
-                }
-                get<Map<String, String>>("${dataUrl}solvers/fetchur.json") {
-                    Utils.checkThreadAndQueue {
-                        MiningFeatures.fetchurItems.clear()
-                        MiningFeatures.fetchurItems.putAll(this)
-                    }
-                }
-                get<Map<String, String>>("${dataUrl}solvers/hungryhiker.json") {
-                    Utils.checkThreadAndQueue {
-                        FarmingFeatures.hungerHikerItems.clear()
-                        FarmingFeatures.hungerHikerItems.putAll(this)
                     }
                 }
                 get<LevelingXPData>("${dataUrl}constants/levelingxp.json") {
@@ -105,90 +67,6 @@ object DataFetcher {
                     Utils.checkThreadAndQueue {
                         MayorInfo.mayorData.clear()
                         MayorInfo.mayorData.addAll(this)
-                    }
-                }
-                get<List<String>>("${dataUrl}solvers/threeweirdos.json") {
-                    Utils.checkThreadAndQueue {
-                        ThreeWeirdosSolver.solutions.clear()
-                        ThreeWeirdosSolver.solutions.addAll(this)
-                    }
-                }
-                get<Map<String, String>>("${dataUrl}solvers/treasurehunter.json") {
-                    Utils.checkThreadAndQueue {
-                        TreasureHunterSolver.treasureHunterLocations.clear()
-                        entries.associateTo(TreasureHunterSolver.treasureHunterLocations) { (key, value) ->
-                            key to value.split(",").map { it.toInt() }
-                                .run { BlockPos(this[0], this[1], this[2]) }
-                        }
-                    }
-                }
-                get<Map<String, List<String>>>("${dataUrl}solvers/oruotrivia.json") {
-                    Utils.checkThreadAndQueue {
-                        TriviaSolver.triviaSolutions.clear()
-                        TriviaSolver.triviaSolutions.putAll(this)
-                    }
-                }
-                get<List<JsonElement>>("${dataUrl}constants/relics.json") {
-                    Utils.checkThreadAndQueue {
-                        RelicWaypoints.relicLocations.clear()
-                        mapTo(RelicWaypoints.relicLocations) {
-                            json.decodeFromJsonElement(BlockPosArraySerializer, it)
-                        }
-                    }
-                }
-                // no key required
-                get<JsonObject>("https://api.hypixel.net/resources/skyblock/items") {
-                    if (get("success")?.jsonPrimitive?.booleanOrNull == true) {
-                        val items: List<ItemFeatures.APISBItem> = json.decodeFromJsonElement(
-                            get("items")!!
-                        )
-                        val sellPrices =
-                            items.filter { it.npcSellPrice != null }.associate { it.id to it.npcSellPrice!! }
-                        val idToName = items.associate { it.id to it.name }
-                        Utils.checkThreadAndQueue {
-                            ItemFeatures.sellPrices.clear()
-                            ItemFeatures.sellPrices.putAll(sellPrices)
-                            ItemFeatures.itemIdToNameLookup.clear()
-                            ItemFeatures.itemIdToNameLookup.putAll(idToName)
-                        }
-                    }
-                }
-                get<Map<String, HashMap<String, Int>>>("${dataUrl}constants/slayerhealth.json") {
-                    Utils.checkThreadAndQueue {
-                        SlayerFeatures.BossHealths.clear()
-                        SlayerFeatures.BossHealths.putAll(this)
-                    }
-                }
-                get<List<SpamHider.Filter>>("${dataUrl}SpamFilters.json") {
-                    Utils.checkThreadAndQueue {
-                        SpamHider.repoFilters.clear()
-                        SpamHider.repoFilters.addAll(this)
-                    }
-                }
-                get<Map<String, String>>("${dataUrl}constants/summons.json") {
-                    Utils.checkThreadAndQueue {
-                        SummonSkins.skinMap.clear()
-                        SummonSkins.skinMap.putAll(this)
-                        SummonSkins.loadSkins()
-                    }
-                }
-
-                if (SheepifyRebellion.isSkytilsPlus) {
-                    get<Map<String, String>>("https://gist.githubusercontent.com/My-Name-Is-Jeff/4ddf4e88360c34a8582b82834b3511c8/raw/coloreddata.json") {
-                        Utils.checkThreadAndQueue {
-                            SheepifyRebellion.skytilsPlusColors.clear()
-                            SheepifyRebellion.skytilsPlusColors.putAll(this.entries.associate {
-                                it.key to (SheepifyRebellion.lookup[it.value.firstOrNull()] ?: DyeColor.WHITE)
-                            })
-                        }
-                    }
-
-                    get<SheepifyRebellion.SkytilsPlusData>("https://gist.githubusercontent.com/My-Name-Is-Jeff/4ddf4e88360c34a8582b82834b3511c8/raw/plusdata.json") {
-                        Utils.checkThreadAndQueue {
-                            SheepifyRebellion.skytilsPlusUsernames.clear()
-                            SheepifyRebellion.skytilsPlusUsernames.addAll(active)
-                            SheepifyRebellion.skytilsPlusUsernames.addAll(inactive)
-                        }
                     }
                 }
             } catch (e: Throwable) {

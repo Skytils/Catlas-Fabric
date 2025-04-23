@@ -78,12 +78,8 @@ val shadowMeMod: Configuration by configurations.creating {
 }
 
 dependencies {
-    if (platform.isForge) {
-        shadowMe("gg.essential:loader-launchwrapper:1.2.3")
-    } else {
-        include(modRuntimeOnly("gg.essential:loader-fabric:1.2.3")!!)
-        modImplementation("net.fabricmc.fabric-api:fabric-api:0.99.4+1.20.6")
-    }
+    include(modRuntimeOnly("gg.essential:loader-fabric:1.2.3")!!)
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.99.4+1.20.6")
     modCompileOnly("gg.essential:essential-${if (platform.mcVersion >= 12100) "1.20.6-fabric" else platform.toString()}:17141+gd6f4cfd3a8") {
         exclude(module = "asm")
         exclude(module = "asm-commons")
@@ -148,14 +144,7 @@ dependencies {
     }
     compileOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
-    if (platform.isLegacyForge) {
-        compileOnly("net.hypixel:mod-api-forge:1.0.1.2") {
-            exclude(group = "me.djtheredstoner", module = "DevAuth-forge-legacy")
-        }
-        shadowMe("net.hypixel:mod-api-forge-tweaker:1.0.1.2")
-    } else {
-        compileOnly("net.hypixel:mod-api:1.0.1")
-    }
+    compileOnly("net.hypixel:mod-api:1.0.1")
 
     shadowMe(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-rc.1")!!)
     annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
