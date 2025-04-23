@@ -42,14 +42,14 @@ import java.awt.Color
 
 object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
 
-    private val neuGreen = Identifier.of("catlas:neu/green_check.png")
-    private val neuWhite = Identifier.of("catlas:neu/white_check.png")
-    private val neuCross = Identifier.of("catlas:neu/cross.png")
-    private val neuQuestion = Identifier.of("catlas:neu/question.png")
-    private val defaultGreen = Identifier.of("catlas:default/green_check.png")
-    private val defaultWhite = Identifier.of("catlas:default/white_check.png")
-    private val defaultCross = Identifier.of("catlas:default/cross.png")
-    private val defaultQuestion = Identifier.of("catlas:default/question.png")
+    private val neuGreen = Identifier.of("catlas:textures/checkmarks/neu/green_check.png")
+    private val neuWhite = Identifier.of("catlas:textures/checkmarks/neu/white_check.png")
+    private val neuCross = Identifier.of("catlas:textures/checkmarks/neu/cross.png")
+    private val neuQuestion = Identifier.of("catlas:textures/checkmarks/neu/question.png")
+    private val defaultGreen = Identifier.of("catlas:textures/checkmarks/default/green_check.png")
+    private val defaultWhite = Identifier.of("catlas:textures/checkmarks/default/white_check.png")
+    private val defaultCross = Identifier.of("catlas:textures/checkmarks/default/cross.png")
+    private val defaultQuestion = Identifier.of("catlas:textures/checkmarks/default/question.png")
 
     var dynamicRotation = 0f
 
@@ -246,9 +246,12 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
 
     private fun drawCheckmark(context: DrawContext, tile: Tile, xOffset: Float, yOffset: Float, checkmarkSize: Double) {
         getCheckmark(tile.state, CatlasConfig.mapCheckmark)?.let {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, it,
+            context.drawTexture(RenderLayer::getGuiTextured, it,
                 (xOffset + (MapUtils.mapRoomSize - checkmarkSize) / 2).toInt(),
-                (yOffset + (MapUtils.mapRoomSize - checkmarkSize) / 2).toInt(), checkmarkSize.toInt(), checkmarkSize.toInt()
+                (yOffset + (MapUtils.mapRoomSize - checkmarkSize) / 2).toInt(),
+                0f, 0f,
+                checkmarkSize.toInt(), checkmarkSize.toInt(),
+                checkmarkSize.toInt(), checkmarkSize.toInt()
             )
         }
     }

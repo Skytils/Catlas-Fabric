@@ -32,7 +32,7 @@ import net.minecraft.util.math.RotationAxis
 import java.awt.Color
 
 object RenderUtils {
-    private val mapIcons = Identifier.of("catlas:marker.png")
+    private val mapIcons = Identifier.of("catlas:textures/marker.png")
 
     fun renderRectBorder(context: DrawContext, x: Double, y: Double, w: Double, h: Double, thickness: Double, color: Color) {
         if (color.alpha == 0) return
@@ -96,14 +96,16 @@ object RenderUtils {
             context.matrices.scale(CatlasConfig.playerHeadScale, CatlasConfig.playerHeadScale, 1f)
 
             if (CatlasConfig.mapVanillaMarker && (player.isOurMarker || name == mc.player!!.name.string)) {
-                context.matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180f))
-                context.drawGuiTexture(
+                //context.matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180f))
+                context.drawTexture(
                     RenderLayer::getGuiTextured,
                     mapIcons,
                     -6, -6,
+                    0f, 0f,
+                    12, 12,
                     12, 12
                 )
-                context.matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-180f))
+                //context.matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-180f))
             } else {
                 // Render box behind the player head
                 val borderColor = when (player.teammate.dungeonClass) {
