@@ -19,6 +19,7 @@
 package gg.skytils.skytilsmod.tweaker;
 
 import gg.skytils.skytilsmod.Reference;
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -32,16 +33,9 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Arrays;
-
-//#if MC==10809
-//$$ import net.minecraft.launchwrapper.Launch;
-//#else
-import net.fabricmc.loader.impl.launch.FabricLauncherBase;
-import java.nio.file.Path;
 //#endif
 
 public class TweakerUtil {
@@ -72,7 +66,7 @@ public class TweakerUtil {
 
         Icon icon = null;
         try {
-            URL url = SkytilsLoadingPlugin.class.getResource("/assets/skytils/sychicpet.gif");
+            URL url = TweakerUtil.class.getResource("/assets/skytils/sychicpet.gif");
             if (url != null) {
                 icon = new ImageIcon(Toolkit.getDefaultToolkit().createImage(url).getScaledInstance(50, 50, Image.SCALE_DEFAULT));
             }
@@ -112,16 +106,6 @@ public class TweakerUtil {
                 allOptions[0]
         );
         exit();
-    }
-
-    static void runStage(String className, String methodName, Object... params) throws ReflectiveOperationException {
-        Method m = getClassForLaunch(className, true).getDeclaredMethod(methodName, Arrays.stream(params).map(Object::getClass).toArray(Class<?>[]::new));
-        m.setAccessible(true);
-        m.invoke(null, params);
-    }
-
-    static Class<?> getClassForLaunch(String name, boolean initialize) throws ClassNotFoundException {
-        return Class.forName(name, initialize, Launch.classLoader);
     }
 
     static Field findField(final Class<?> clazz, final String name) throws ReflectiveOperationException {

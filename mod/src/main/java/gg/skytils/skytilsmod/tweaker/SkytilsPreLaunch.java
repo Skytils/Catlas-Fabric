@@ -19,14 +19,12 @@
 package gg.skytils.skytilsmod.tweaker;
 
 import gg.skytils.skytilsmod.utils.EssentialPlatformSetup;
-import gg.skytils.skytilsmod.utils.SuperSecretSettings;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 public class SkytilsPreLaunch implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
         // DuplicateSkytilsChecker.checkForDuplicates(); TODO: is this needed on Fabric?
-        SuperSecretSettings.load();
         DependencyLoader.loadDependencies();
         EssentialPlatformSetup.setup();
     }

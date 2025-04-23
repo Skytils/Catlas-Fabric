@@ -17,7 +17,6 @@
  */
 package gg.skytils.skytilsmod.gui
 
-import gg.essential.api.EssentialAPI
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.UIText
@@ -25,33 +24,19 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.universal.UDesktop
-import gg.essential.universal.UKeyboard
-import gg.essential.universal.USound
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
-import gg.skytils.skytilsmod.features.impl.funny.skytilsplus.SkytilsPlus
 import gg.skytils.skytilsmod.gui.components.SimpleButton
 import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
-import gg.skytils.skytilsmod.gui.features.*
-import gg.skytils.skytilsmod.gui.waypoints.WaypointsGui
-import gg.skytils.skytilsmod.utils.SuperSecretSettings
-import gg.skytils.skytilsmod.utils.Utils
-import gg.skytils.skytilsmod.utils.openGUI
-import gg.skytils.skytilsmod.utils.toStringIfTrue
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.util.Identifier
 import java.net.URI
-
-//#if MC>11400
-import net.minecraft.sound.SoundEvents
-//#endif
 
 class OptionsGui(val parent: Screen? = null) :
     WindowScreen(ElementaVersion.V2) {
 
     private val skytilsText: UIText =
-        UIText(if (Utils.isBSMod) "BSMod${"+".toStringIfTrue(SkytilsPlus.redeemed)}" else "Skytils", shadow = false).childOf(window).constrain {
+        UIText("Skytils", shadow = false).childOf(window).constrain {
             x = CenterConstraint()
             y = RelativeConstraint(0.075f)
             textScale = RelativeWindowConstraint(0.025f)
@@ -60,22 +45,7 @@ class OptionsGui(val parent: Screen? = null) :
     private var orderIndex = 0
 
     init {
-        SimpleButton("Config").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + RelativeConstraint(0.075f)
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            Skytils.config.openGUI()
-        }
-        SimpleButton("Edit Aliases").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(CommandAliasesGui())
-        }
+
         SimpleButton("Edit Locations").childOf(window).constrain {
             x = CenterConstraint()
             y = SiblingConstraint() + 2.pixels()
@@ -83,49 +53,8 @@ class OptionsGui(val parent: Screen? = null) :
             height = 20.pixels()
         }.onMouseClick {
             displayScreen(
-                if (it.mouseButton == 1) ElementaEditingGui()
-                else VanillaEditingGui()
+                ElementaEditingGui()
             )
-        }
-        SimpleButton("Edit Key Shortcuts").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(KeyShortcutsGui())
-        }
-        SimpleButton("Edit Spam Filters").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(SpamHiderGui())
-        }
-        SimpleButton("Edit Waypoints").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(WaypointsGui())
-        }
-        SimpleButton("Edit Notifications").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(CustomNotificationsGui())
-        }
-        SimpleButton("Edit Enchantment Names").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            displayScreen(EnchantNamesGui())
         }
         SimpleButton("Edit Catlas").childOf(window).constrain {
             x = CenterConstraint()
@@ -179,35 +108,7 @@ class OptionsGui(val parent: Screen? = null) :
         }.onMouseClick {
             displayScreen(LegalGui())
         }
-        SimpleButton("ur a wizard Harry", true, true).childOf(window).constrain {
-            x = 3.pixels
-            y = basicYConstraint { window.getHeight() - this.getHeight() * 2 - 6 }
-            width = RelativeConstraint(0.1f)
-            height = RelativeConstraint(0.05f)
-        }.onMouseClick {
-            Skytils.displayScreen = SuperSecretGui()
-        }.apply {
-            (this as SimpleButton).text.constrain {
-                width = RelativeConstraint(0.9f)
-            }
-            if (!SuperSecretSettings.chamberOfSecrets) hide(true)
-        }
         animate()
-    }
-
-    override fun onKeyPressed(keyCode: Int, typedChar: Char, modifiers: UKeyboard.Modifiers?) {
-        super.onKeyPressed(keyCode, typedChar, modifiers)
-        if (keyCode == order[orderIndex] || keyCode == gamerOrder[orderIndex]) orderIndex++
-        else orderIndex = 0
-        if (orderIndex == order.size) {
-            orderIndex = 0
-            Skytils.displayScreen = SuperSecretGui()
-            //#if MC<11400
-            //$$ USound.playSoundStatic(Identifier("random.door_open"), 1f, 1f)
-            //#else
-            USound.playSoundStatic(SoundEvents.BLOCK_WOODEN_DOOR_OPEN, 1f, 1f)
-            //#endif
-        }
     }
 
     private fun animate() {
@@ -230,31 +131,4 @@ class OptionsGui(val parent: Screen? = null) :
         super.resize(mc, width, height)
     }
     //#endif
-
-    companion object {
-        private val order = arrayOf(
-            UKeyboard.KEY_UP,
-            UKeyboard.KEY_UP,
-            UKeyboard.KEY_DOWN,
-            UKeyboard.KEY_DOWN,
-            UKeyboard.KEY_LEFT,
-            UKeyboard.KEY_RIGHT,
-            UKeyboard.KEY_LEFT,
-            UKeyboard.KEY_RIGHT,
-            UKeyboard.KEY_B,
-            UKeyboard.KEY_A
-        )
-        private val gamerOrder = arrayOf(
-            UKeyboard.KEY_W,
-            UKeyboard.KEY_W,
-            UKeyboard.KEY_S,
-            UKeyboard.KEY_S,
-            UKeyboard.KEY_A,
-            UKeyboard.KEY_D,
-            UKeyboard.KEY_A,
-            UKeyboard.KEY_D,
-            UKeyboard.KEY_B,
-            UKeyboard.KEY_A
-        )
-    }
 }

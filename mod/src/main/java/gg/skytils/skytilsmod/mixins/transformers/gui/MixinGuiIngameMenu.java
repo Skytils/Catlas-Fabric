@@ -38,7 +38,7 @@ public class MixinGuiIngameMenu extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void init(CallbackInfo ci) {
-        if (Skytils.getConfig().getConfigButtonOnPause()) {
+        if (true) {
             int x = this.width - 105;
             int y = this.height - 22;
             for (Element element : this.children()) {
