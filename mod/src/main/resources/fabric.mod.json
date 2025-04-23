@@ -27,8 +27,7 @@
     ]
   },
   "mixins": [
-    "mixins.skytils.json",
-    "mixins.skytils-events.json"
+    "mixins.skytils.json"
   ],
   "depends": {
     "essential-loader": ">=1.2.3",

@@ -24,20 +24,26 @@ plugins {
 }
 
 repositories {
-    if (project.platform.isFabric && project.platform.mcVersion == 10809) maven("https://repo.legacyfabric.net/repository/legacyfabric/")
 }
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-beta.1")!!)
-    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-    compileOnly("org.spongepowered:mixin:0.8.5")
+    // compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-beta.1")!!)
+    // annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
+    // compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 group = "gg.skytils.events"
 
-loom.mixin {
-    defaultRefmapName = "mixins.skytils-events.refmap.json"
+loom {
+    mods {
+        create("skytils-events") {
+            sourceSet(sourceSets["main"])
+        }
+    }
+    mixin {
+        defaultRefmapName = "mixins.skytils-events.refmap.json"
+    }
 }
 
 tasks.processResources {

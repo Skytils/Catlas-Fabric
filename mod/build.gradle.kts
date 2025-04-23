@@ -124,7 +124,7 @@ dependencies {
 
     include(implementation("org.brotli:dec:0.1.2")!!)
 
-    include(implementation(project(":events:$platform"))!!)
+    include(modImplementation(project(":events:$platform"))!!)
     include(implementation(project(":vigilance"))!!)
     include(implementation("gg.skytils.hypixel.types:types")!!)
     include(implementation("gg.skytils.skytilsws.shared:ws-shared")!!)
