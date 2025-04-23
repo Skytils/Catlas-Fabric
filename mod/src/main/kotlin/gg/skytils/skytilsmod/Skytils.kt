@@ -332,8 +332,6 @@ object Skytils : CoroutineScope, EventSubscriber {
     }
 
     fun onDisconnect(event: ClientDisconnectEvent) {
-        Utils.lastNHPC = null
-
         WSClient.closeConnection()
     }
 

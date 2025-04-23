@@ -32,12 +32,12 @@ import kotlinx.coroutines.launch
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.entity.Entity
 import net.minecraft.nbt.NbtList
+import net.minecraft.sound.SoundEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
 import net.minecraft.util.*
 import net.minecraft.util.math.*
 import org.objectweb.asm.tree.MethodInsnNode
-import java.awt.Color
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -60,14 +60,6 @@ object Utils {
     @JvmField
     var shouldBypassVolume = false
 
-    var lastNHPC: ClientPlayNetworkHandler? = null
-
-    val isBSMod by lazy {
-        if ("noBS" + Calendar.getInstance().get(Calendar.YEAR) in SuperSecretSettings.settings) return@lazy false
-        val cal = Calendar.getInstance()
-        return@lazy cal.get(Calendar.MONTH) == Calendar.APRIL && cal.get(Calendar.DAY_OF_MONTH) == 1
-    }
-
     fun getBlocksWithinRangeAtSameY(center: BlockPos, radius: Int, y: Int): Iterable<BlockPos> {
         val corner1 = BlockPos(center.x - radius, y, center.z - radius)
         val corner2 = BlockPos(center.x + radius, y, center.z + radius)
@@ -81,7 +73,7 @@ object Utils {
      */
     fun playLoudSound(sound: String?, pitch: Double) {
         shouldBypassVolume = true
-        mc.player.playSound(sound, 1f, pitch.toFloat())
+        mc.player!!.playSound(SoundEvent.of(Identifier.of(sound)), 1f, pitch.toFloat())
         shouldBypassVolume = false
     }
 

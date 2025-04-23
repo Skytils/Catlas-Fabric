@@ -24,6 +24,9 @@ import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.utils.Utils
 import kotlinx.coroutines.launch
+import net.minecraft.sound.SoundEvent
+import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Identifier
 import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
@@ -45,7 +48,7 @@ object SoundQueue : EventSubscriber {
                 if (sound.isLoud) {
                     Utils.playLoudSound(sound.sound, sound.pitch.toDouble())
                 } else {
-                    mc.player.playSound(sound.sound, sound.volume, sound.pitch)
+                    mc.player!!.playSound(SoundEvent.of(Identifier.of(sound.sound)), sound.volume, sound.pitch)
                 }
                 soundQueue.remove(sound)
             }
