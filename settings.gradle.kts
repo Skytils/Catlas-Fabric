@@ -53,7 +53,6 @@ project(":events").apply {
     buildFileName = "root.gradle.kts"
 }
 listOf(
-    "1.20.4-fabric",
     "1.21.4-fabric",
     "1.21.5-fabric"
 ).forEach { version ->
@@ -70,7 +69,6 @@ project(":mod").apply {
     buildFileName = "root.gradle.kts"
 }
 listOf(
-    "1.20.4-fabric",
     "1.21.4-fabric",
     "1.21.5-fabric"
 ).forEach { version ->
