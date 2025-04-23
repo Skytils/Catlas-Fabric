@@ -18,13 +18,23 @@
 
 package gg.skytils.event.impl.render
 
-import gg.skytils.event.CancellableEvent
 import gg.skytils.event.Event
-import net.minecraft.util.hit.HitResult
+import net.minecraft.client.render.Camera
+import net.minecraft.client.render.GameRenderer
+import net.minecraft.client.render.RenderTickCounter
+import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.util.ObjectAllocator
+import org.joml.Matrix4f
 
 /**
- * [gg.skytils.event.mixins.render.MixinGameRenderer.renderWorld]
+ * [gg.skytils.event.mixins.render.MixinWorldRenderer.afterRender]
  */
-class WorldDrawEvent(val partialTicks: Float) : Event()
-
-class SelectionBoxDrawEvent(val target: HitResult?, val partialTicks: Float) : CancellableEvent()
+class WorldDrawEvent(
+    val allocator: ObjectAllocator,
+    val tickCounter: RenderTickCounter,
+    val camera: Camera,
+    val gameRenderer: GameRenderer,
+    val positionMatrix: Matrix4f,
+    val projectionMatrix: Matrix4f,
+    val entityVertexConsumers: VertexConsumerProvider.Immediate
+) : Event()

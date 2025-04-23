@@ -18,29 +18,24 @@
 
 package gg.skytils.event.mixins.render;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.sugar.Local;
 import gg.skytils.event.EventsKt;
-import gg.skytils.event.impl.render.SelectionBoxDrawEvent;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import gg.skytils.event.impl.render.WorldDrawEvent;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.ObjectAllocator;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
-    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;drawBlockOutline(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/entity/Entity;DDDLnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    public boolean renderSelectionBox(WorldRenderer instance, MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double cameraX, double cameraY, double cameraZ, BlockPos pos, BlockState state, @Local(argsOnly = true) float tickDelta) {
-        SelectionBoxDrawEvent event = new SelectionBoxDrawEvent(this.client.crosshairTarget, tickDelta);
-        return !EventsKt.postCancellableSync(event);
+    @Inject(method = "render", at = @At(value = "RETURN"))
+    private void afterRender(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+        EventsKt.postSync(new WorldDrawEvent(allocator, tickCounter, camera, gameRenderer, positionMatrix, projectionMatrix, bufferBuilders.getEntityVertexConsumers()));
     }
 }
