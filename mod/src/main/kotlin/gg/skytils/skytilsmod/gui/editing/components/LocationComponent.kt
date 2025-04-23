@@ -28,7 +28,6 @@ import gg.essential.elementa.utils.withAlpha
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UResolution
 import gg.skytils.skytilsmod.core.structure.GuiElement
-import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import java.awt.Color
 
 class LocationComponent(val element: GuiElement) : UIComponent() {

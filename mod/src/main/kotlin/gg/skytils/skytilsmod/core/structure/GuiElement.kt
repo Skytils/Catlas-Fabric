@@ -19,8 +19,6 @@ package gg.skytils.skytilsmod.core.structure
 
 import gg.essential.universal.UResolution
 import gg.skytils.skytilsmod.core.GuiManager
-import gg.skytils.skytilsmod.utils.graphics.ScreenRenderer
-import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderTickCounter
 
@@ -76,7 +74,7 @@ abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float,
     companion object {
         val sr = UResolution
         val fr by lazy {
-            ScreenRenderer.fontRenderer
+            mc.textRenderer
         }
     }
 

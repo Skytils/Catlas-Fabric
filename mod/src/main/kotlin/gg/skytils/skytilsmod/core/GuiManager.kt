@@ -32,7 +32,6 @@ import gg.skytils.skytilsmod._event.RenderHUDEvent
 import gg.skytils.skytilsmod.core.structure.GuiElement
 import gg.skytils.skytilsmod.core.structure.v2.HudElement
 import gg.skytils.skytilsmod.utils.Utils
-import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import gg.skytils.skytilsmod.utils.toast.Toast
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString

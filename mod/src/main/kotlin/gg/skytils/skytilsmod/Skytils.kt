@@ -40,7 +40,6 @@ import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
-import gg.skytils.skytilsmod.utils.graphics.ScreenRenderer
 import gg.skytils.skytilsmod.utils.graphics.colors.CustomColor
 import gg.skytils.skytilsws.client.WSClient
 import io.ktor.client.*
@@ -270,9 +269,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         PersistentSave.loadData()
 
-        ScreenRenderer.init()
-
-
         //FIXME
         val cch = ClientCommandHandler.instance
 
@@ -299,8 +295,6 @@ object Skytils : CoroutineScope, EventSubscriber {
     }
 
     fun onTick(event: TickEvent) {
-        ScreenRenderer.refresh()
-
         ScoreboardUtil.sidebarLines = ScoreboardUtil.fetchScoreboardLines().map { l -> ScoreboardUtil.cleanSB(l) }
         TabListUtils.tabEntries = TabListUtils.fetchTabEntries().map { e -> e to e.text }
         if (displayScreen != null) {
