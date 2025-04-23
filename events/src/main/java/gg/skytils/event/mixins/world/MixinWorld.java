@@ -20,7 +20,7 @@ package gg.skytils.event.mixins.world;
 
 import gg.skytils.event.EventsKt;
 import gg.skytils.event.impl.entity.EntityJoinWorldEvent;
-import net.minecraft.client.world.ClientEntityManager;
+import net.minecraft.world.entity.ClientEntityManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.entity.EntityLike;
 import org.spongepowered.asm.mixin.Mixin;

@@ -32,7 +32,7 @@ import net.minecraft.client.font.TextRenderer;
 
 @Mixin(net.minecraft.client.gui.DrawContext.class)
 public class MixinItemRenderer {
-    @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
+    @Inject(method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
     private void postRenderItem(TextRenderer textRenderer, ItemStack stack, int xPosition, int yPosition, String countOverride, CallbackInfo ci) {
 //#else
 //$$ @Mixin(ItemRenderer.class)
