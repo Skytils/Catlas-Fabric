@@ -196,7 +196,7 @@ object DungeonListener : EventSubscriber {
             val actions = event.packet.actions
             val entries = event.packet.entries
 
-            if (PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in actions) return
+            if (PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in actions && PlayerListS2CPacket.Action.UPDATE_LISTED !in actions) return
 
             for (entry in entries) {
                 val text = entry.displayName?.formattedText ?: continue
