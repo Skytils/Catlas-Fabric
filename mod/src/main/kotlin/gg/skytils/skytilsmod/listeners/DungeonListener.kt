@@ -304,7 +304,7 @@ object DungeonListener : EventSubscriber {
                             DungeonClass.EMPTY,
                             0,
                             pos,
-                            old?.skinTexture ?: DefaultSkinHelper.getTexture()
+                            old?.skinTextures?.texture ?: DefaultSkinHelper.getTexture()
                         ).also {
                             if (old == null) {
                                 printDevMessage({ "could not get network player info for $name $action" }, "dungeonlistener")
@@ -336,7 +336,7 @@ object DungeonListener : EventSubscriber {
                         it.name == teammate.playerName && it.uuid.version() == 4
                     }
 
-                    old?.skinTexture?.let { teammate.skin = it }
+                    old?.skinTextures?.texture?.let { teammate.skin = it }
 
                     if ("§r§cDEAD§r§f)§r" in text) {
                         markDead(teammate)

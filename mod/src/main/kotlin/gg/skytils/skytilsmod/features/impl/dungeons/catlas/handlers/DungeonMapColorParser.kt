@@ -20,8 +20,8 @@ package gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers
 
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.*
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
-import gg.skytils.skytilsmod.utils.multiplatform.UDirection
 import net.minecraft.item.map.MapState
+import net.minecraft.util.math.Direction
 
 object DungeonMapColorParser {
     private var centerColors: ByteArray = ByteArray(121)
@@ -96,7 +96,7 @@ object DungeonMapColorParser {
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
             connected.add(current)
-            queue.addAll(UDirection.HORIZONTALS.mapNotNull {
+            queue.addAll(Direction.Type.HORIZONTAL.mapNotNull {
                 getTile(current.x + it.vector.x, current.z + it.vector.z) as? Room
             })
         }

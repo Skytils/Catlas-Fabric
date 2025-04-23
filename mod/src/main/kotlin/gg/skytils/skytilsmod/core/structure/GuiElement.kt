@@ -18,6 +18,7 @@
 package gg.skytils.skytilsmod.core.structure
 
 import gg.essential.universal.UResolution
+import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.core.GuiManager
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderTickCounter

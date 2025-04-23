@@ -21,7 +21,6 @@ import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.IO
 import gg.skytils.skytilsmod.Skytils.client
 import gg.skytils.skytilsmod.core.UpdateChecker
-import gg.skytils.skytilsmod.utils.MathUtil
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

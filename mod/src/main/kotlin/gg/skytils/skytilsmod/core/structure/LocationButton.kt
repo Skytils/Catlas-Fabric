@@ -49,9 +49,9 @@ class LocationButton(var element: GuiElement) : ClickableWidget(-1, 0, 0, null) 
         hovered = mouseX >= x && mouseY >= y && mouseX < x2 && mouseY < y2
         val c = Color(255, 255, 255, if (hovered) 100 else 40)
         RenderUtil.drawRect(0.0, 0.0, (element.width + 4).toDouble(), (element.height + 4).toDouble(), c.rgb)
-        RenderSystem.method_4348(2f, 2f, 0f)
+        context.matrices.translate(2f, 2f, 0f)
         element.demoRender()
-        RenderSystem.method_4348(-2f, -2f, 0f)
+        context.matrices.translate(-2f, -2f, 0f)
         if (hovered) {
             lastHoveredElement = element
         }
