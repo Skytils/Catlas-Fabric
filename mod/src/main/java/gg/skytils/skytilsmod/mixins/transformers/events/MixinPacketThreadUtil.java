@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(NetworkThreadUtils.class)
 public class MixinPacketThreadUtil {
-    @ModifyArg(method = "forceMainThread", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/ThreadExecutor;submit(Ljava/lang/Runnable;)Lcom/google/common/util/concurrent/ListenableFuture;"))
+    @ModifyArg(method = "forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/ThreadExecutor;executeSync(Ljava/lang/Runnable;)V"))
     private static Runnable processPacket(Runnable var1, @Local(argsOnly = true) Packet<?> packet) {
         return () -> {
             if (!EventsKt.postCancellableSync(new MainThreadPacketReceiveEvent(packet))) {

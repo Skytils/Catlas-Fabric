@@ -48,7 +48,6 @@ import gg.skytils.skytilsmod.features.impl.slayer.SlayerFeatures
 import gg.skytils.skytilsmod.features.impl.trackers.Tracker
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
-import gg.skytils.skytilsmod.gui.editing.VanillaEditingGui
 import gg.skytils.skytilsmod.gui.features.*
 import gg.skytils.skytilsmod.gui.profile.ProfileGui
 import gg.skytils.skytilsmod.gui.updater.UpdateGui

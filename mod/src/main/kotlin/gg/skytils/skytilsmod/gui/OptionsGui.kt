@@ -32,7 +32,6 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
 import gg.skytils.skytilsmod.features.impl.funny.skytilsplus.SkytilsPlus
 import gg.skytils.skytilsmod.gui.components.SimpleButton
 import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
-import gg.skytils.skytilsmod.gui.editing.VanillaEditingGui
 import gg.skytils.skytilsmod.gui.features.*
 import gg.skytils.skytilsmod.gui.waypoints.WaypointsGui
 import gg.skytils.skytilsmod.utils.SuperSecretSettings
