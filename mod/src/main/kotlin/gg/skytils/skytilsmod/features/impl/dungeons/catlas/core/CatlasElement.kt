@@ -36,20 +36,22 @@ import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import net.minecraft.client.gui.DrawContext
 import com.mojang.blaze3d.systems.RenderSystem
+import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.util.Identifier
+import net.minecraft.util.profiler.Profilers
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
 
-    private val neuGreen = Identifier("catlas:neu/green_check.png")
-    private val neuWhite = Identifier("catlas:neu/white_check.png")
-    private val neuCross = Identifier("catlas:neu/cross.png")
-    private val neuQuestion = Identifier("catlas:neu/question.png")
-    private val defaultGreen = Identifier("catlas:default/green_check.png")
-    private val defaultWhite = Identifier("catlas:default/white_check.png")
-    private val defaultCross = Identifier("catlas:default/cross.png")
-    private val defaultQuestion = Identifier("catlas:default/question.png")
+    private val neuGreen = Identifier.of("catlas:neu/green_check.png")
+    private val neuWhite = Identifier.of("catlas:neu/white_check.png")
+    private val neuCross = Identifier.of("catlas:neu/cross.png")
+    private val neuQuestion = Identifier.of("catlas:neu/question.png")
+    private val defaultGreen = Identifier.of("catlas:default/green_check.png")
+    private val defaultWhite = Identifier.of("catlas:default/white_check.png")
+    private val defaultCross = Identifier.of("catlas:default/cross.png")
+    private val defaultQuestion = Identifier.of("catlas:default/question.png")
 
     var dynamicRotation = 0f
 
@@ -297,11 +299,11 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
         )
     }
 
-    override fun render() {
+    override fun render(context: DrawContext, tickCounter: RenderTickCounter) {
         if (!toggled || SBInfo.mode != SkyblockIsland.Dungeon.mode || mc.player == null || mc.world == null) return
         if (DungeonTimer.dungeonStartTime == -1L && !CatlasConfig.mapShowBeforeStart) return
         if (CatlasConfig.mapHideInBoss && DungeonTimer.bossEntryTime != -1L) return
-        mc.tickProfilerResult.push("border")
+        Profilers.get().push("border")
 
         RenderUtils.renderRect(
             0.0, 0.0, 128.0, 128.0, CatlasConfig.mapBackground
@@ -316,7 +318,7 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
             CatlasConfig.mapBorder
         )
 
-        mc.tickProfilerResult.pop()
+        Profilers.get().pop()
 
         if (CatlasConfig.mapRotate) {
             RenderSystem.pushMatrix()
@@ -327,13 +329,13 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
             RenderSystem.method_4412(-64.0, -64.0, 0.0)
         }
 
-        mc.tickProfilerResult.push("rooms")
+        Profilers.get().push("rooms")
         renderRooms()
-        mc.tickProfilerResult.swap("text")
+        Profilers.get().swap("text")
         renderText()
-        mc.tickProfilerResult.swap("heads")
+        Profilers.get().swap("heads")
         renderPlayerHeads()
-        mc.tickProfilerResult.pop()
+        Profilers.get().pop()
 
         if (CatlasConfig.mapRotate) {
             GL11.glDisable(GL11.GL_SCISSOR_TEST)
@@ -345,7 +347,7 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
         }
     }
 
-    override fun demoRender() {
+    override fun demoRender(context: DrawContext, tickCounter: RenderTickCounter) {
         DrawContext.fill(0, 0, 128, 128, Color.RED.rgb)
         fr.drawString("Dungeon Map", 64f, 5f, alignment = SmartFontRenderer.TextAlignment.MIDDLE)
     }

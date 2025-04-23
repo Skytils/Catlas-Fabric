@@ -21,6 +21,8 @@ import gg.essential.universal.UResolution
 import gg.skytils.skytilsmod.core.GuiManager
 import gg.skytils.skytilsmod.utils.graphics.ScreenRenderer
 import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.render.RenderTickCounter
 
 abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float, var y: Float, var textShadow: SmartFontRenderer.TextShadow = SmartFontRenderer.TextShadow.NORMAL) {
     constructor(name: String, scale: Float = 1f, x: Int, y: Int, textShadow: SmartFontRenderer.TextShadow = SmartFontRenderer.TextShadow.NORMAL) : this(
@@ -31,8 +33,8 @@ abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float,
         textShadow
     )
 
-    abstract fun render()
-    abstract fun demoRender()
+    abstract fun render(context: DrawContext, tickCounter: RenderTickCounter)
+    abstract fun demoRender(context: DrawContext, tickCounter: RenderTickCounter)
     abstract val toggled: Boolean
 
     fun setPos(x: Int, y: Int) {

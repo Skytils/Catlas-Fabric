@@ -21,24 +21,21 @@ package gg.skytils.skytilsmod.mixins.transformers.events;
 import gg.skytils.event.EventsKt;
 import gg.skytils.skytilsmod._event.RenderHUDEvent;
 import gg.skytils.skytilsmod.utils.GlState;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderTickCounter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if FORGE
-//$$ import net.minecraftforge.client.GuiIngameForge;
-//$$
-//$$ @Mixin(GuiIngameForge.class)
-//#else
 @Mixin(InGameHud.class)
-//#endif
+
 public class MixinGuiIngame {
     @Inject(method = "renderHotbar", at = @At("TAIL"))
-    public void render(CallbackInfo ci) {
+    public void render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         GlState.Companion.pushState();
-        EventsKt.postSync(new RenderHUDEvent());
+        EventsKt.postSync(new RenderHUDEvent(context, tickCounter));
         GlState.Companion.popState();
     }
 }

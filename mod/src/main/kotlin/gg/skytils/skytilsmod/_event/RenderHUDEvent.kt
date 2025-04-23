@@ -19,5 +19,7 @@
 package gg.skytils.skytilsmod._event
 
 import gg.skytils.event.Event
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.render.RenderTickCounter
 
-class RenderHUDEvent : Event()
+class RenderHUDEvent(val context: DrawContext, val tickCounter: RenderTickCounter) : Event()

@@ -36,8 +36,9 @@ import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import gg.skytils.skytilsmod.utils.toast.Toast
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import net.minecraft.client.MinecraftClient
-import com.mojang.blaze3d.systems.RenderSystem
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.text.Text
+import net.minecraft.util.profiler.Profilers
 import java.io.File
 import java.io.Reader
 import java.io.Writer
@@ -109,29 +110,26 @@ object GuiManager : PersistentSave(File(Skytils.modDir, "guipositions.json")), E
     }
 
     fun onRenderHUD(event: RenderHUDEvent) {
-        if (
-            MinecraftClient.getInstance().currentScreen is VanillaEditingGui ||
-            MinecraftClient.getInstance().currentScreen == demoHud
-            ) return
-        mc.tickProfilerResult.push("SkytilsHUD")
+        if (mc.currentScreen == demoHud) return
+        Profilers.get().push("SkytilsHUD")
         gui.draw(UMatrixStack.Compat.get())
         hud.draw(UMatrixStack.Compat.get())
         for ((_, element) in elements) {
-            mc.tickProfilerResult.push(element.name)
+            Profilers.get().push(element.name)
             try {
-                RenderSystem.pushMatrix()
-                RenderSystem.method_4348(element.scaleX, element.scaleY, 0f)
-                RenderSystem.method_4384(element.scale, element.scale, 0f)
-                element.render()
-                RenderSystem.popMatrix()
+                event.context.matrices.push()
+                event.context.matrices.translate(element.scaleX, element.scaleY, 0f)
+                event.context.matrices.scale(element.scale, element.scale, 0f)
+                element.render(event.context, event.tickCounter)
+                event.context.matrices.pop()
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 UChat.chat("${Skytils.failPrefix} §cSkytils ${Skytils.VERSION} caught and logged an ${ex::class.simpleName ?: "error"} while rendering ${element.name}. Please report this on the Discord server at discord.gg/skytils.")
             }
-            mc.tickProfilerResult.pop()
+            Profilers.get().pop()
         }
-        renderTitles()
-        mc.tickProfilerResult.pop()
+        renderTitles(event.context)
+        Profilers.get().pop()
     }
 
     fun onTick(event: gg.skytils.event.impl.TickEvent) {
@@ -149,57 +147,54 @@ object GuiManager : PersistentSave(File(Skytils.modDir, "guipositions.json")), E
         }
     }
 
-    /**
-     * Adapted from SkyblockAddons under MIT license
-     * @link https://github.com/BiscuitDevelopment/SkyblockAddons/blob/master/LICENSE
-     * @author BiscuitDevelopment
-     */
-    private fun renderTitles() {
+    private fun renderTitles(context: DrawContext) {
         if (mc.world == null || mc.player == null || !Utils.inSkyblock) {
             return
         }
-        val scaledWidth = UResolution.scaledWidth
-        val scaledHeight = UResolution.scaledHeight
+
+        val textRenderer = mc.textRenderer
+        val scaledWidth = context.scaledWindowWidth
+
         if (title != null) {
             val stringWidth = mc.textRenderer.getWidth(title)
             var scale = 4f // Scale is normally 4, but if its larger than the screen, scale it down...
             if (stringWidth * scale > scaledWidth * 0.9f) {
                 scale = scaledWidth * 0.9f / stringWidth.toFloat()
             }
-            RenderSystem.pushMatrix()
-            RenderSystem.method_4348((scaledWidth / 2).toFloat(), (scaledHeight / 2).toFloat(), 0.0f)
-            RenderSystem.enableBlend()
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0)
-            RenderSystem.pushMatrix()
-            RenderSystem.method_4384(scale, scale, scale) // TODO Check if changing this scale breaks anything...
-            mc.textRenderer.method_0_2383(
-                title,
-                (-mc.textRenderer.getWidth(title) / 2).toFloat(),
-                -20.0f,
-                0xFF0000,
-                true
+            context.matrices.push()
+            context.matrices.translate(
+                (context.scaledWindowWidth / 2).toFloat(),
+                (context.scaledWindowHeight / 2).toFloat(),
+                0.0f
             )
-            RenderSystem.popMatrix()
-            RenderSystem.popMatrix()
+/*            RenderSystem.enableBlend()
+            RenderSystem.blendFuncSeparate(770, 771, 1, 0)*/
+            context.matrices.scale(scale, scale, scale) // TODO Check if changing this scale breaks anything...
+            context.matrices.push()
+            context.drawTextWithBackground(textRenderer, Text.of(title), -stringWidth / 2, -10, stringWidth, 0xFF0000)
+            context.matrices.pop()
+            context.matrices.pop()
         }
+
         if (subtitle != null) {
-            val stringWidth = mc.textRenderer.getWidth(subtitle)
+            val stringWidth = textRenderer.getWidth(subtitle)
             var scale = 2f // Scale is normally 2, but if its larger than the screen, scale it down...
             if (stringWidth * scale > scaledWidth * 0.9f) {
                 scale = scaledWidth * 0.9f / stringWidth.toFloat()
             }
-            RenderSystem.pushMatrix()
-            RenderSystem.method_4348((scaledWidth / 2).toFloat(), (scaledHeight / 2).toFloat(), 0.0f)
-            RenderSystem.enableBlend()
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0)
-            RenderSystem.pushMatrix()
-            RenderSystem.method_4384(scale, scale, scale) // TODO Check if changing this scale breaks anything...
-            mc.textRenderer.method_0_2383(
-                subtitle, -mc.textRenderer.getWidth(subtitle) / 2f, -23.0f,
-                0xFF0000, true
+            context.matrices.push()
+            context.matrices.translate(
+                (context.scaledWindowWidth / 2).toFloat(),
+                (context.scaledWindowHeight / 2).toFloat(),
+                0.0f
             )
-            RenderSystem.popMatrix()
-            RenderSystem.popMatrix()
+/*            RenderSystem.enableBlend()
+            RenderSystem.blendFuncSeparate(770, 771, 1, 0)*/
+            context.matrices.push()
+            context.matrices.scale(scale, scale, scale) // TODO Check if changing this scale breaks anything...
+            context.drawTextWithBackground(textRenderer, Text.of(subtitle), -stringWidth / 2, 5, stringWidth, 0xFF0000)
+            context.matrices.pop()
+            context.matrices.pop()
         }
     }
 
