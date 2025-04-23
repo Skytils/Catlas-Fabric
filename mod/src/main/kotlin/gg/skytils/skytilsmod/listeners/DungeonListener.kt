@@ -196,10 +196,10 @@ object DungeonListener : EventSubscriber {
             val actions = event.packet.actions
             val entries = event.packet.entries
 
-            if (PlayerListS2CPacket.Action.ADD_PLAYER !in actions && PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in actions) return
+            if (PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in actions) return
 
             for (entry in entries) {
-                val text = entry.text
+                val text = entry.displayName?.formattedText ?: continue
                 if ('✦' in text || '✔' in text || '✖' in text) {
                     puzzleRegex.find(text)?.let { match ->
                         val puzzleName = match.groups["puzzle"]!!.value

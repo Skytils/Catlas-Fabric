@@ -263,11 +263,10 @@ object ScoreCalculation : EventSubscriber {
         if (
             !Utils.inDungeons ||
             event.packet !is PlayerListS2CPacket ||
-            (PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in event.packet.actions &&
-                    PlayerListS2CPacket.Action.ADD_PLAYER !in event.packet.actions)
+            PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in event.packet.actions
         ) return
         event.packet.entries.forEach { playerData ->
-            val name = playerData.text ?: return@forEach
+            val name = playerData.displayName?.formattedText ?: return@forEach
             printDevMessage(name, "scorecalctab")
             when {
                 name.contains("Deaths:") -> {
