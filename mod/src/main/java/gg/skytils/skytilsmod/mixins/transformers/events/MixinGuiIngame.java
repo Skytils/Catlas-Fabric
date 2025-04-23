@@ -20,7 +20,6 @@ package gg.skytils.skytilsmod.mixins.transformers.events;
 
 import gg.skytils.event.EventsKt;
 import gg.skytils.skytilsmod._event.RenderHUDEvent;
-import gg.skytils.skytilsmod.utils.GlState;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
@@ -34,8 +33,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinGuiIngame {
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        GlState.Companion.pushState();
         EventsKt.postSync(new RenderHUDEvent(context, tickCounter));
-        GlState.Companion.popState();
     }
 }

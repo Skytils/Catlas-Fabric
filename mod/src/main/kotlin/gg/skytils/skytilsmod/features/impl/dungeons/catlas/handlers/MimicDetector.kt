@@ -61,9 +61,7 @@ object MimicDetector : EventSubscriber {
         if (entity.isBaby && entity.armorItems.all { it == ItemStack.EMPTY }) {
             if (!ScoreCalculation.mimicKilled.get()) {
                 ScoreCalculation.mimicKilled.set(true)
-                if (Skytils.config.scoreCalculationAssist) {
-                    Skytils.sendMessageQueue.add("/pc \$SKYTILS-DUNGEON-SCORE-MIMIC$")
-                }
+                Skytils.sendMessageQueue.add("/pc \$SKYTILS-DUNGEON-SCORE-MIMIC$")
                 WSClient.sendPacketAsync(C2SPacketDungeonMimic(SBInfo.server ?: return))
             }
         }
@@ -80,9 +78,7 @@ object MimicDetector : EventSubscriber {
                         ?.id?.getOrNull() == mimicSkullUUID
                 }) {
                 ScoreCalculation.mimicKilled.set(true)
-                if (Skytils.config.scoreCalculationAssist) {
-                    Skytils.sendMessageQueue.add("/pc \$SKYTILS-DUNGEON-SCORE-MIMIC$")
-                }
+                Skytils.sendMessageQueue.add("/pc \$SKYTILS-DUNGEON-SCORE-MIMIC$")
                 WSClient.sendPacketAsync(C2SPacketDungeonMimic(SBInfo.server ?: return))
             }
         }

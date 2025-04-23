@@ -100,9 +100,7 @@ object SBInfo : EventSubscriber {
     fun onGuiOpen(event: ScreenOpenEvent) {
         if (!Utils.inSkyblock) return
         if (event.screen is GenericContainerScreen) {
-            val chest = event.screen as GenericContainerScreen
-            val container = chest.handler as GenericContainerScreenHandler
-            val containerName = container.inventory.customName.string
+            val containerName = event.screen!!.title.string
             _lastOpenContainerNameState.set(containerName)
         }
     }

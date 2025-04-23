@@ -194,9 +194,6 @@ object ScoreCalculation : EventSubscriber {
         ((if (bools.first) 2 else 0) + crypts.coerceAtMost(5) + if (bools.second) 10 else 0)
     }
 
-    var hasSaid270 = false
-    var hasSaid300 = false
-
     val totalScore =
         ((skillScore.zip(discoveryScore)).zip(speedScore.zip(bonusScore))).map { (first, second) ->
             printDevMessage({ "skill score ${first.first}" }, "scorecalcpuzzle")
@@ -210,28 +207,6 @@ object ScoreCalculation : EventSubscriber {
         }.also { state ->
             state.onSetValue { score ->
                 updateText(score)
-                if (!Utils.inDungeons) return@onSetValue
-                if (score < 200) {
-                    hasSaid270 = false
-                    hasSaid300 = false
-                    return@onSetValue
-                }
-                if (!hasSaid270 && score >= 270) {
-                    hasSaid270 = true
-                    if (Skytils.config.createTitleOn270Score) GuiManager.createTitle(
-                        "§c§l" + Skytils.config.messageTitle270Score.ifBlank { "270" },
-                        20
-                    )
-                    if (Skytils.config.sendMessageOn270Score) Skytils.sendMessageQueue.add("/pc Skytils-SC > ${Skytils.config.message270Score.ifBlank { "270 score" }}")
-                }
-                if (!hasSaid300 && score >= 300) {
-                    hasSaid300 = true
-                    if (Skytils.config.createTitleOn300Score) GuiManager.createTitle(
-                        "§c§l" + Skytils.config.messageTitle300Score.ifBlank { "300" },
-                        20
-                    )
-                    if (Skytils.config.sendMessageOn300Score) Skytils.sendMessageQueue.add("/pc Skytils-SC > ${Skytils.config.message300Score.ifBlank { "300 score" }}")
-                }
             }
         }
 
@@ -376,19 +351,17 @@ object ScoreCalculation : EventSubscriber {
     fun onChatReceived(event: ChatMessageReceivedEvent) {
         if (!Utils.inDungeons || mc.player == null) return
         val unformatted = event.message.string.stripControlCodes()
-        if (Skytils.config.scoreCalculationReceiveAssist) {
-            if (unformatted.startsWith("Party > ") || (unformatted.contains(":") && !unformatted.contains(">"))) {
-                if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-MIMIC$") || (Skytils.config.receiveHelpFromOtherModMimicDead && unformatted.containsAny(
-                        "Mimic dead!", "Mimic Killed!", "Mimic Dead!"
-                    ))
-                ) {
-                    mimicKilled.set(true)
-                    return
-                }
-                if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-ROOM$")) {
-                    event.cancelled = true
-                    return
-                }
+        if (unformatted.startsWith("Party > ") || (unformatted.contains(":") && !unformatted.contains(">"))) {
+            if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-MIMIC$") || (Skytils.config.receiveHelpFromOtherModMimicDead && unformatted.containsAny(
+                    "Mimic dead!", "Mimic Killed!", "Mimic Dead!"
+                ))
+            ) {
+                mimicKilled.set(true)
+                return
+            }
+            if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-ROOM$")) {
+                event.cancelled = true
+                return
             }
         }
     }
@@ -423,5 +396,6 @@ object ScoreCalculation : EventSubscriber {
         register(::onPuzzleReset)
         register(::onScoreboardChange)
         register(::onTabChange)
+        register(::onChatReceived)
     }
 }

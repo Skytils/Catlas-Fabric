@@ -31,11 +31,9 @@ import gg.skytils.skytilsmod.utils.printDevMessage
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonRoom
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.Heightmap
 import net.minecraft.world.World
-
-//#if MC>=12000
 import net.minecraft.world.chunk.ChunkStatus
-//#endif
 
 /**
  * Handles everything related to scanning the dungeon. Running [scan] will update the instance of [DungeonInfo].

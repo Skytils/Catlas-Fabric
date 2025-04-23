@@ -28,20 +28,21 @@ import gg.skytils.event.register
 import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import gg.skytils.skytilsmod._event.PacketSendEvent
 import gg.skytils.skytilsmod.core.*
-import gg.skytils.skytilsmod.features.impl.dungeons.*
+import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures
+import gg.skytils.skytilsmod.features.impl.dungeons.DungeonTimer
+import gg.skytils.skytilsmod.features.impl.dungeons.ScoreCalculation
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.Catlas
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasElement
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
-import gg.skytils.skytilsmod.features.impl.handlers.*
+import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
 import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
 import gg.skytils.skytilsws.client.WSClient
@@ -57,19 +58,14 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.*
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.fabricmc.fabric.impl.command.client.ClientCommandInternals
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket
 import net.minecraft.screen.PlayerScreenHandler
-import sun.misc.Unsafe
 import java.io.File
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -94,11 +90,6 @@ object Skytils : CoroutineScope, EventSubscriber {
     @JvmStatic
     val mc: MinecraftClient by lazy {
         MinecraftClient.getInstance()
-    }
-
-    @JvmStatic
-    val config by lazy {
-        Config
     }
 
     val modDir by lazy {
@@ -135,12 +126,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
     val deobfEnvironment: Boolean
         get() = isDeobfuscatedEnvironment.getUntracked()
-
-    val unsafe by lazy {
-        Unsafe::class.java.getDeclaredField("theUnsafe").apply {
-            isAccessible = true
-        }.get(null) as Unsafe
-    }
 
     @JvmStatic
     val json = Json {
@@ -249,9 +234,7 @@ object Skytils : CoroutineScope, EventSubscriber {
         jarFile = FabricLoader.getInstance().allMods.find { it.metadata.id == MOD_ID }?.origin?.paths?.firstOrNull()?.toFile()
         //#endif
 
-        config.init()
         CatlasConfig
-        UpdateChecker.downloadDeleteTask()
 
         arrayOf(
             this,
@@ -260,9 +243,7 @@ object Skytils : CoroutineScope, EventSubscriber {
             guiManager,
             SBInfo,
             SoundQueue,
-            UpdateChecker,
 
-            AuctionData,
             Catlas,
             DungeonFeatures,
             DungeonTimer,
@@ -321,16 +302,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         PersistentSave.loadData()
 
-        if (UpdateChecker.currentVersion.specialVersionType != UpdateChecker.UpdateType.RELEASE && config.updateChannel == 2) {
-            EssentialAPI.getNotifications().push("Skytils Update Checker", "You are on a development version of Skytils. Click here to change your update channel to pre-release.") {
-                onAction = {
-                    config.updateChannel = 1
-                    config.markDirty()
-                    EssentialAPI.getNotifications().push("Skytils Update Checker", "Your update channel has been changed to pre-release.", duration = 3f)
-                }
-            }
-        }
-
         checkSystemTime()
 
         if (!DependencyLoader.hasNativeBrotli) {
@@ -356,8 +327,7 @@ object Skytils : CoroutineScope, EventSubscriber {
 
     fun onPacket(event: MainThreadPacketReceiveEvent<*>) {
         if (event.packet is GameJoinS2CPacket) {
-            if (config.connectToWS)
-                WSClient.openConnection()
+            WSClient.openConnection()
         }
     }
 
@@ -377,8 +347,8 @@ object Skytils : CoroutineScope, EventSubscriber {
         val old = mc.currentScreen
         if (event.screen == null && old is OptionsGui && old.parent != null) {
             displayScreen = old.parent
-        } else if (event.screen == null && config.reopenOptionsMenu) {
-            if (old is ReopenableGUI || (old is AccessorSettingsGui && old.config is Config)) {
+        } else if (event.screen == null) {
+            if (old is ReopenableGUI) {
                 tickTimer(1) {
                     if (mc.player?.currentScreenHandler is PlayerScreenHandler)
                         displayScreen = OptionsGui()

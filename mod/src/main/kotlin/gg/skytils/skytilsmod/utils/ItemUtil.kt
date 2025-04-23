@@ -38,7 +38,7 @@ object ItemUtil {
         }
         val extraAttributes = getExtraAttributes(item) ?: return null
 
-        return if (!extraAttributes.getType("id") == NbtElement.STRING_TYPE) {
+        return if (extraAttributes.getType("id") != NbtElement.STRING_TYPE) {
             null
         } else extraAttributes.getString("id")
     }

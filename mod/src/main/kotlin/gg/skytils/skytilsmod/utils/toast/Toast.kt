@@ -93,7 +93,7 @@ open class Toast(title: String, image: UIComponent? = null, subtext: String = ""
                 Animations.IN_EXP,
                 0.6f,
                 0.pixels(alignOpposite = true, alignOutside = true),
-                Skytils.config.toastTime / 1000f
+                2.5f
             )
             onComplete {
                 hide()

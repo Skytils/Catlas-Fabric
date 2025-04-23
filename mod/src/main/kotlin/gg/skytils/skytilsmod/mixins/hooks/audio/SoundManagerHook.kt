@@ -33,9 +33,3 @@ fun bypassPlayerVolume(
 ) {
     if (Utils.shouldBypassVolume) cir.returnValue = 1f
 }
-
-fun stopPlayingUnknownSounds(p_sound: SoundInstance, ci: CallbackInfo) {
-    if (p_sound.id.path.isBlank() && Utils.isOnHypixel && Skytils.config.preventLogSpam) {
-        ci.cancel()
-    }
-}
