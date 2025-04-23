@@ -42,19 +42,20 @@ val PlayerListEntry.text: String
     //#else
     get() {
        return if (gameMode != GameMode.SPECTATOR)
-       displayName?.string ?: Team.decorateName(scoreboardTeam, Text.literal(profile.name)).string
-       else displayName?.copy()?.formatted(Formatting.ITALIC)?.string ?: Team.decorateName(scoreboardTeam, Text.literal(profile.name)).formatted(Formatting.ITALIC).string
+       (displayName ?: Team.decorateName(scoreboardTeam, Text.literal(profile.name))).formattedText
+       else (displayName?.copy() ?: Team.decorateName(scoreboardTeam, Text.literal(profile.name))).formatted(Formatting.ITALIC).formattedText
     }
     //#endif
 
 val PlayerListS2CPacket.Entry.text: String
-    get() = displayName?.method_10865() ?: Team.decorateName(
-        team,
-        profile.name
-    )
+    get() {
+        return if (gameMode != GameMode.SPECTATOR)
+            (displayName ?: Team.decorateName(team, Text.literal(profile?.name))).formattedText
+        else (displayName?.copy() ?: Team.decorateName(team, Text.literal(profile?.name))).formatted(Formatting.ITALIC).formattedText
+    }
 
 val PlayerListS2CPacket.Entry.team
-    get() = mc.world?.scoreboard?.getScoreHolderTeam(profile.name)
+    get() = mc.world?.scoreboard?.getScoreHolderTeam(profile?.name)
 
 
 object TabListUtils {

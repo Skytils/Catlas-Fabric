@@ -22,18 +22,13 @@ import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.play.ChatMessageReceivedEvent
 import gg.skytils.event.impl.play.WorldUnloadEvent
 import gg.skytils.event.register
-import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures.dungeonFloorNumber
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomType
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
-import gg.skytils.skytilsmod.utils.NumberUtil
-import gg.skytils.skytilsmod.utils.NumberUtil.roundToPrecision
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.formattedText
 import gg.skytils.skytilsmod.utils.stripControlCodes
-import kotlin.math.floor
-import kotlin.math.roundToInt
 
 object DungeonTimer : EventSubscriber {
     var dungeonStartTime = -1L
@@ -163,37 +158,4 @@ object DungeonTimer : EventSubscriber {
         witherDoors = 0
         scoreShownAt = -1
     }
-}
-
-private fun dungeonTimeFormat(seconds: Double): String {
-    return if (seconds >= 60) {
-        "${floor(seconds / 60).toInt()}m ${
-            (seconds % 60).run {
-                if (!Skytils.config.showMillisOnDungeonTimer) roundToInt() else NumberUtil.nf.format(
-                    this.roundToPrecision(
-                        2
-                    )
-                )
-            }
-        }s"
-    } else {
-        "${
-            seconds.run {
-                if (!Skytils.config.showMillisOnDungeonTimer) roundToInt() else NumberUtil.nf.format(
-                    this.roundToPrecision(
-                        2
-                    )
-                )
-            }
-        }s"
-    }
-}
-
-private fun diff(end: Long, start: Long): Any {
-    val sec = ((end - start) / 1000.0)
-    return if (!Skytils.config.showMillisOnDungeonTimer) sec.roundToInt() else NumberUtil.nf.format(
-        sec.roundToPrecision(
-            2
-        )
-    )
 }
