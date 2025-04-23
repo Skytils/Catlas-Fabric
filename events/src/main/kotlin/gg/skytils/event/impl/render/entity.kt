@@ -19,41 +19,7 @@
 package gg.skytils.event.impl.render
 
 import gg.skytils.event.CancellableEvent
-import gg.skytils.event.Event
-import net.minecraft.client.render.entity.LivingEntityRenderer
 import net.minecraft.entity.Entity
-import net.minecraft.entity.LivingEntity
-
-//#if MC>=12000
-import net.minecraft.client.render.entity.model.EntityModel
-//#if MC>=12100
-import net.minecraft.client.render.entity.state.LivingEntityRenderState
-//#endif
-//#endif
-
-/**
- * [gg.skytils.event.mixins.render.MixinRendererLivingEntity.onRender]
- */
-class LivingEntityPreRenderEvent
-    //#if MC<12100
-    //$$  <T : LivingEntity, M: EntityModel<T>>
-    //#else
-    <T : LivingEntity, S : LivingEntityRenderState, M : EntityModel<in S>>
-    //#endif
-    (
-        val entity: T,
-        //#if MC<12100
-        //$$ val renderer: LivingEntityRenderer<T, M>,
-        //#else
-        val renderer: LivingEntityRenderer<T, S, M>,
-        //#endif
-        val x: Double, val y: Double, val z: Double, val partialTicks: Float
-    ) : CancellableEvent()
-
-/**
- * [gg.skytils.event.mixins.render.MixinRendererLivingEntity.onRenderPost]
- */
-class LivingEntityPostRenderEvent(val entity: Entity) : Event()
 
 /**
  * [gg.skytils.event.mixins.render.MixinRenderManager.shouldRender]

@@ -18,8 +18,7 @@
 
 package gg.skytils.event.mixins.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import gg.skytils.event.EventsKt;
 import gg.skytils.event.impl.entity.BossBarSetEvent;
 import net.minecraft.client.gui.hud.ClientBossBar;
@@ -27,13 +26,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Mixin(targets = "net.minecraft.client.gui.hud.BossBarHud$1")
 public class MixinBossStatus {
-    @WrapOperation(method = "add", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
-    public void onSetBossStatus(Map instance, Object uuid, ClientBossBar bossBar, Operation<Object> original) {
-        if (!EventsKt.postCancellableSync(new BossBarSetEvent(bossBar, false))) {
-            original.call(instance, uuid, bossBar);
+    @WrapWithCondition(method = "add", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+    public boolean onSetBossStatus(Map<?, ?> instance, Object k, Object v) {
+        if (v instanceof ClientBossBar bossBar) {
+            return !EventsKt.postCancellableSync(new BossBarSetEvent(bossBar, false));
         }
+        return true;
     }
 }
