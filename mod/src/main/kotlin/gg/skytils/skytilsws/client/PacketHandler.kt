@@ -28,18 +28,11 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Unknown
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
-import gg.skytils.skytilsmod.features.impl.mining.CHWaypoints
-import gg.skytils.skytilsmod.features.impl.mining.CHWaypoints.CHInstance
-import gg.skytils.skytilsmod.features.impl.mining.CHWaypoints.chWaypointsList
-import gg.skytils.skytilsmod.utils.SBInfo
-import gg.skytils.skytilsmod.utils.printDevMessage
-import gg.skytils.skytilsmod.utils.realWorldTime
 import gg.skytils.skytilsws.shared.IPacketHandler
 import gg.skytils.skytilsws.shared.SkytilsWS
 import gg.skytils.skytilsws.shared.packet.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.coroutineScope
-import net.minecraft.util.math.BlockPos
 import java.util.*
 
 object PacketHandler : IPacketHandler {
@@ -94,31 +87,6 @@ object PacketHandler : IPacketHandler {
             }
             is S2CPacketDungeonMimic -> {
                 ScoreCalculation.mimicKilled.set(true)
-            }
-            is S2CPacketCHReset -> {
-                CHWaypoints.waypoints.remove(packet.serverId)
-            }
-            is S2CPacketCHWaypoint -> {
-                val currentServer = SBInfo.server
-                if (currentServer == packet.serverId) {
-                    val worldTime = mc.world?.realWorldTime
-
-                    if (worldTime != null && worldTime < packet.serverTime) {
-                        WSClient.sendPacket(C2SPacketCHReset(packet.serverId))
-                    } else {
-                        CHWaypoints.CrystalHollowsMap.Locations.entries.find { it.packetType == packet.type }?.let {
-                            if (!it.loc.exists()) {
-                                it.loc.locX = packet.x.toDouble()
-                                it.loc.locY = packet.y.toDouble()
-                                it.loc.locZ = packet.z.toDouble()
-                            }
-                        }
-                    }
-                } else {
-                    printDevMessage({ "$packet serverId: ${packet.serverId} != $currentServer" }, "chwaypoints")
-                    val instance = chWaypointsList.getOrPut(packet.serverId) { CHInstance() }
-                    instance.waypoints[packet.type] = BlockPos(packet.x, packet.y, packet.z)
-                }
             }
             is S2CPacketJerryMayor -> {
                 MayorInfo.jerryMayor = MayorInfo.mayorData.find { it.name == packet.mayor }

@@ -128,15 +128,6 @@ object Skytils : CoroutineScope, EventSubscriber {
     val sendMessageQueue = ArrayDeque<String>()
 
     @JvmField
-    var usingLabymod = false
-
-    @JvmField
-    var usingNEU = false
-
-    @JvmField
-    var usingSBA = false
-
-    @JvmField
     var jarFile: File? = null
     private var lastChatMessage = 0L
 
@@ -294,26 +285,16 @@ object Skytils : CoroutineScope, EventSubscriber {
             Catlas,
             DungeonFeatures,
             DungeonTimer,
-            ItemFeatures,
-            MiscFeatures,
             ScoreCalculation,
-            ServerPayloadInterceptor,
-            EntityPlayerSPHook,
-            MouseHelperHook
+            ServerPayloadInterceptor
         ).forEach(EventSubscriber::setup)
     }
 
     //FIXME
     fun loadComplete() {
-        usingLabymod = isModLoaded("labymod")
-        usingNEU = isModLoaded("notenoughupdates")
-        usingSBA = isModLoaded("skyblockaddons")
-
         MayorInfo.fetchMayorData()
 
         PersistentSave.loadData()
-
-        ModChecker.checkModdedForge()
 
         ScreenRenderer.init()
 
@@ -327,27 +308,19 @@ object Skytils : CoroutineScope, EventSubscriber {
         cch.method_0_5866(SkytilsCommand)
 
         if (UpdateChecker.currentVersion.specialVersionType != UpdateChecker.UpdateType.RELEASE && config.updateChannel == 2) {
-            if (ModChecker.canShowNotifications) {
-                EssentialAPI.getNotifications().push("Skytils Update Checker", "You are on a development version of Skytils. Click here to change your update channel to pre-release.") {
-                    onAction = {
-                        config.updateChannel = 1
-                        config.markDirty()
-                        EssentialAPI.getNotifications().push("Skytils Update Checker", "Your update channel has been changed to pre-release.", duration = 3f)
-                    }
+            EssentialAPI.getNotifications().push("Skytils Update Checker", "You are on a development version of Skytils. Click here to change your update channel to pre-release.") {
+                onAction = {
+                    config.updateChannel = 1
+                    config.markDirty()
+                    EssentialAPI.getNotifications().push("Skytils Update Checker", "Your update channel has been changed to pre-release.", duration = 3f)
                 }
-            } else {
-                UChat.chat("$prefix §fYou are on a development version of Skytils. Change your update channel to pre-release to get notified of new updates.")
             }
         }
 
         checkSystemTime()
 
         if (!DependencyLoader.hasNativeBrotli) {
-            if (ModChecker.canShowNotifications) {
-                EssentialAPI.getNotifications().push("Skytils Warning", "Native Brotli is not available. Skytils will use the Java Brotli decoder, which cannot encode Brotli.", duration = 3f)
-            } else {
-                UChat.chat("$prefix §fNative Brotli is not available. Skytils will use the Java Brotli decoder, which cannot encode Brotli.")
-            }
+            EssentialAPI.getNotifications().push("Skytils Warning", "Native Brotli is not available. Skytils will use the Java Brotli decoder, which cannot encode Brotli.", duration = 3f)
         }
     }
 
@@ -367,73 +340,12 @@ object Skytils : CoroutineScope, EventSubscriber {
             val msg = sendMessageQueue.pollFirst()
             if (!msg.isNullOrBlank()) UChat.say(msg)
         }
-        if (Utils.inSkyblock && DevTools.getToggle("copydetails") && UKeyboard.isCtrlKeyDown()) {
-            if (UKeyboard.isKeyDown(UKeyboard.KEY_TAB)) {
-                UChat.chat("Copied tab data to clipboard")
-                UDesktop.setClipboardString(TabListUtils.tabEntries.map { it.second }.toString())
-            }
-            if (UKeyboard.isKeyDown(UKeyboard.KEY_CAPITAL)) {
-                UChat.chat("Copied scoreboard data to clipboard")
-                UDesktop.setClipboardString(ScoreboardUtil.sidebarLines.toString())
-            }
-            val openScreen = mc.currentScreen
-            if (UKeyboard.isKeyDown(UKeyboard.KEY_LMETA) && openScreen is GenericContainerScreen) {
-                //#if MC<11400
-                //$$ val container = openScreen.handler
-                //#else
-                val container = openScreen.screenHandler
-                //#endif
-                (container as? GenericContainerScreenHandler)?.let { chest ->
-                    UChat.chat("Copied container data to clipboard")
-                    //#if MC<11400
-                    //$$ val name = chest.inventory.name
-                    //#else
-                    val name = openScreen.title.string
-                    //#endif
-                    UDesktop.setClipboardString(
-                        "Name: '${name}', Items: ${
-                            chest.slots.filter { it.inventory == chest.inventory }
-                                .map { it.stack?.serializeNBT() }
-                        }"
-                    )
-
-                }
-            }
-        }
     }
-
-    init {
-        tickTimer(20, repeats = true) {
-            if (mc.player != null) {
-                if (DevTools.getToggle("sprint")) {
-                    //#if MC<11400
-                    //$$ KeyBinding.method_1416(mc.options.sprintKey.method_1421(), true)
-                    //#else
-                    mc.options.sprintKey?.isPressed = true
-                    //#endif
-
-                }
-            }
-        }
-    }
-
 
     fun onPacket(event: MainThreadPacketReceiveEvent<*>) {
         if (event.packet is GameJoinS2CPacket) {
-            IO.launch {
-                TrophyFish.loadFromApi()
-            }
             if (config.connectToWS)
                 WSClient.openConnection()
-        }
-
-        if (event.packet is EntityTrackerUpdateS2CPacket && mc.player != null) {
-            val nameObj = event.packet.trackedValues?.find { it.id() == 2 }?.value() ?: return
-            val entity = mc.world?.getEntityById(event.packet.id())
-
-            if (entity is ExtensionEntityLivingBase) {
-                entity.skytilsHook.onNewDisplayName(nameObj as String)
-            }
         }
     }
 
@@ -481,11 +393,7 @@ object Skytils : CoroutineScope, EventSubscriber {
 
                 println("Got local clock offset: $localClockOffset")
                 if (abs(localClockOffset) > 3) {
-                    if (ModChecker.canShowNotifications) {
-                        EssentialAPI.getNotifications().push("Skytils", "Your system time is inaccurate.", 3f)
-                    } else {
-                        UChat.chat("$prefix §fYour system time appears to be inaccurate. Please sync your system time to avoid issues with Skytils.")
-                    }
+                    EssentialAPI.getNotifications().push("Skytils", "Your system time is inaccurate.", 3f)
                 } else {
                     trustClientTime = true
                 }
