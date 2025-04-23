@@ -18,38 +18,29 @@
 
 package gg.skytils.skytilsmod.listeners
 
-import gg.essential.lib.caffeine.cache.Cache
-import gg.essential.lib.caffeine.cache.Caffeine
-import gg.essential.lib.caffeine.cache.Expiry
-import gg.essential.universal.UChat
-import gg.skytils.event.EventPriority
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.entity.EntityJoinWorldEvent
-import gg.skytils.event.impl.play.ActionBarReceivedEvent
 import gg.skytils.event.impl.play.WorldUnloadEvent
 import gg.skytils.event.postSync
 import gg.skytils.event.register
-import gg.skytils.hypixel.types.skyblock.Pet
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.IO
 import gg.skytils.skytilsmod.Skytils.mc
-import gg.skytils.skytilsmod._event.*
-import gg.skytils.skytilsmod.core.API
+import gg.skytils.skytilsmod._event.DungeonPuzzleCompletedEvent
+import gg.skytils.skytilsmod._event.DungeonPuzzleDiscoveredEvent
+import gg.skytils.skytilsmod._event.DungeonPuzzleResetEvent
+import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import gg.skytils.skytilsmod.core.tickTimer
 import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures
 import gg.skytils.skytilsmod.features.impl.dungeons.DungeonTimer
-import gg.skytils.skytilsmod.features.impl.dungeons.ScoreCalculation
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.DungeonMapPlayer
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomType
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
-import gg.skytils.skytilsmod.features.impl.handlers.SpiritLeap
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor.getResponse
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorChatComponentText
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorNetHandlerPlayClient
 import gg.skytils.skytilsmod.utils.*
-import gg.skytils.skytilsmod.utils.NumberUtil.addSuffix
 import gg.skytils.skytilsmod.utils.NumberUtil.romanToDecimal
 import gg.skytils.skytilsws.client.WSClient
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonEnd
@@ -77,36 +68,6 @@ object DungeonListener : EventSubscriber {
     val disconnected = hashSetOf<String>()
     val incompletePuzzles = hashSetOf<String>()
     val terminalStatePuzzles = hashSetOf<String>()
-    val hutaoFans: Cache<String, Boolean> = Caffeine.newBuilder()
-        .weakKeys()
-        .weakValues()
-        .maximumSize(100L)
-        .expireAfter(object : Expiry<String, Boolean> {
-            val hour = 3600000000000L
-            val tenMinutes = 600000000000L
-
-
-            override fun expireAfterCreate(
-                key: String, value: Boolean, currentTime: Long
-            ): Long {
-                return if (value) hour else tenMinutes
-            }
-
-            override fun expireAfterUpdate(
-                key: String, value: Boolean, currentTime: Long, currentDuration: Long
-            ): Long {
-                return currentDuration
-            }
-
-            override fun expireAfterRead(
-                key: String, value: Boolean, currentTime: Long, currentDuration: Long
-            ): Long {
-                return currentDuration
-            }
-
-        })
-        .build()
-    private val inProgressSpiritChecks = hashSetOf<String>()
 
     val partyCountPattern = Regex("§r {9}§r§b§lParty §r§f\\((?<count>[1-5])\\)§r")
     private val classPattern =
@@ -138,13 +99,13 @@ object DungeonListener : EventSubscriber {
         if (event.packet is GameMessageS2CPacket) {
             val text = event.packet.content.formattedText
             val unformatted = text.stripControlCodes()
-            if (event.packet.type == 2.toByte()) {
+            if (event.packet.overlay) {
                 secretsRegex.find(text)?.destructured?.also { (secrets, maxSecrets) ->
                     val sec = secrets.toInt()
                     val max = maxSecrets.toInt().coerceAtLeast(sec)
 
                     run setFoundSecrets@ {
-                        val tile = ScanUtils.getRoomFromPos(mc.player.blockPos)
+                        val tile = ScanUtils.getRoomFromPos(mc.player!!.blockPos)
                         if (tile is Room && tile.data.name != "Unknown") {
                             val room = tile.uniqueRoom ?: return@setFoundSecrets
                             if (room.foundSecrets != sec) {
@@ -194,7 +155,7 @@ object DungeonListener : EventSubscriber {
                             val party = async {
                                 ServerboundPartyInfoPacket().getResponse<ClientboundPartyInfoPacket>()
                             }
-                            val partyMembers = party.await().members.ifEmpty { setOf(mc.player.uuid) }.mapTo(hashSetOf()) { it.toString() }
+                            val partyMembers = party.await().members.ifEmpty { setOf(mc.player!!.uuid) }.mapTo(hashSetOf()) { it.toString() }
                             val entrance = DungeonInfo.uniqueRooms["Entrance"] ?: error("Entrance not found")
                             assert(entrance.mainRoom.data.type == RoomType.ENTRANCE)
                             printDevMessage("hi", "dungeonws")
@@ -222,8 +183,6 @@ object DungeonListener : EventSubscriber {
                     }
                 } else {
                     witherDoorOpenedRegex.find(unformatted)?.destructured?.let { (name) ->
-                        SpiritLeap.doorOpener = name
-
                         DungeonInfo.keys--
                     }
 
@@ -234,10 +193,10 @@ object DungeonListener : EventSubscriber {
             }
         }
         else if (event.packet is PlayerListS2CPacket) {
-            val action = event.packet.action
+            val actions = event.packet.actions
             val entries = event.packet.entries
 
-            if (action != PlayerListS2CPacket.Action.ADD_PLAYER && action != PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME) return
+            if (PlayerListS2CPacket.Action.ADD_PLAYER !in actions && PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in actions) return
 
             for (entry in entries) {
                 val text = entry.text
@@ -273,12 +232,9 @@ object DungeonListener : EventSubscriber {
                     continue
                 }
 
-                val old = (mc.networkHandler!! as AccessorNetHandlerPlayClient).uuidToPlayerInfo[entry.profile.id]
-                if (old != null && action == PlayerListS2CPacket.Action.ADD_PLAYER) {
-                    printDevMessage({ "player ${entry.text} already exists in the list but was added" }, "dungeonlistener")
-                }
+                val old = (mc.networkHandler!! as AccessorNetHandlerPlayClient).uuidToPlayerInfo[entry.profileId]
 
-                val pos = playerEntryNames[old?.profile?.name ?: entry.profile.name]
+                val pos = playerEntryNames[old?.profile?.name ?: entry.profile!!.name]
                 if (pos != null) {
                     val matcher = classPattern.find(text)
                     if (matcher == null) {
@@ -307,10 +263,10 @@ object DungeonListener : EventSubscriber {
                             old?.skinTextures?.texture ?: DefaultSkinHelper.getTexture()
                         ).also {
                             if (old == null) {
-                                printDevMessage({ "could not get network player info for $name $action" }, "dungeonlistener")
+                                printDevMessage({ "could not get network player info for $name $actions" }, "dungeonlistener")
                                 tickTimer(1) {
                                     printDevMessage({ "setting skin for ${name}" }, "dungeonlistener")
-                                    it.skin = (mc.networkHandler!! as AccessorNetHandlerPlayClient).uuidToPlayerInfo[entry.profile.id]?.skinTexture ?: DefaultSkinHelper.getTexture()
+                                    it.skin = (mc.networkHandler!! as AccessorNetHandlerPlayClient).uuidToPlayerInfo[entry.profileId]?.skinTextures?.texture ?: DefaultSkinHelper.getTexture()
                                 }
                             }
                             println("Added $it to list")
@@ -332,8 +288,8 @@ object DungeonListener : EventSubscriber {
                         teammate.tabEntryIndex = pos
                     }
 
-                    teammate.player = mc.world.players.find {
-                        it.name == teammate.playerName && it.uuid.version() == 4
+                    teammate.player = mc.world!!.players.find {
+                        it.name.string == teammate.playerName && it.uuid.version() == 4
                     }
 
                     old?.skinTextures?.texture?.let { teammate.skin = it }
@@ -344,11 +300,8 @@ object DungeonListener : EventSubscriber {
                         markRevived(teammate)
                     }
 
-                    CooldownTracker.updateCooldownReduction()
-                    checkSpiritPet(teammate)
-
                     tickTimer(1) {
-                        val self = team[mc.player.name]
+                        val self = team[mc.player!!.name.string]
                         val alives = team.values.filterNot {
                             it.dead || it == self || it in deads
                         }.sortedBy {
@@ -364,8 +317,8 @@ object DungeonListener : EventSubscriber {
                 }
             }
         } else if (event.packet is EntitiesDestroyS2CPacket) {
-            event.packet.entityIds.map(mc.world::getEntityById).filter { it is PlayerEntity }.forEach { entity ->
-                team[entity.name]?.player = null
+            event.packet.entityIds.mapNotNull(mc.world!!::getEntityById).filter { it is PlayerEntity }.forEach { entity ->
+                team[entity.name.string]?.player = null
             }
         }
     }
@@ -373,19 +326,7 @@ object DungeonListener : EventSubscriber {
     fun onJoinWorld(event: EntityJoinWorldEvent) {
         // S0CPacketSpawnPlayer
         if (event.entity is AbstractClientPlayerEntity && event.entity.uuid.version() == 4) {
-            team[event.entity.name]?.player = event.entity as PlayerEntity
-        }
-    }
-
-    fun onChatLow(event: ActionBarReceivedEvent) {
-        if (Skytils.config.dungeonSecretDisplay && Utils.inDungeons) {
-            if (event.message is AccessorChatComponentText) {
-                (event.message as AccessorChatComponentText).text = (event.message as AccessorChatComponentText).text.replace(secretsRegex, "")
-            }
-            event.message.siblings.forEach {
-                if (it !is AccessorChatComponentText) return@forEach
-                it.text = it.text.replace(secretsRegex, "")
-            }
+            team[event.entity.name.string]?.player = event.entity as PlayerEntity
         }
     }
 
@@ -397,28 +338,6 @@ object DungeonListener : EventSubscriber {
             teammate.lastLivingStateChange = time
             teammate.dead = true
             teammate.deaths++
-            val totalDeaths = team.values.sumOf { it.deaths }
-            val isFirstDeath = totalDeaths == 1
-
-            @Suppress("LocalVariableName")
-            val `silly~churl, billy~churl, silly~billy hilichurl` = if (isFirstDeath) {
-                val hutaoIsCool = hutaoFans.getIfPresent(teammate.playerName) ?: false
-                ScoreCalculation.firstDeathHadSpirit.set(hutaoIsCool)
-                hutaoIsCool
-            } else false
-            printDevMessage({ isFirstDeath.toString() }, "spiritpet")
-            printDevMessage({ ScoreCalculation.firstDeathHadSpirit.toString() }, "spiritpet")
-            if (Skytils.config.dungeonDeathCounter) {
-                tickTimer(1) {
-                    UChat.chat(
-                        "§bThis is §e${teammate.playerName}§b's §e${teammate.deaths.addSuffix()}§b death out of §e${totalDeaths}§b total tracked deaths.${
-                            " §6(SPIRIT)".toStringIfTrue(
-                                `silly~churl, billy~churl, silly~billy hilichurl`
-                            )
-                        }"
-                    )
-                }
-            }
         }
     }
 
@@ -434,25 +353,6 @@ object DungeonListener : EventSubscriber {
         deads.clear()
         team.values.forEach {
             it.dead = false
-        }
-    }
-
-    fun checkSpiritPet(teammate: DungeonTeammate) {
-        val name = teammate.playerName
-        if (hutaoFans.getIfPresent(name) != null) return
-        if (inProgressSpiritChecks.add(name)) {
-            IO.launch {
-                runCatching {
-                    val uuid = teammate.player?.uuid ?: MojangUtil.getUUIDFromUsername(name) ?: return@runCatching
-                    API.getSelectedSkyblockProfile(uuid)?.members?.get(uuid.nonDashedString())?.pets_data?.pets?.any(Pet::isSpirit)?.let {
-                        hutaoFans[name] = it
-                    }
-                }.onFailure {
-                    it.printStackTrace()
-                }
-            }.invokeOnCompletion {
-                inProgressSpiritChecks.remove(name)
-            }
         }
     }
 
@@ -481,7 +381,6 @@ object DungeonListener : EventSubscriber {
 
     override fun setup() {
         register(::onPacket)
-        register(::onChatLow, EventPriority.Low)
         register(::onWorldLoad)
         register(::onJoinWorld)
     }
