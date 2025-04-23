@@ -248,11 +248,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         arrayOf(
             this,
-            ScoreCalculation,
-        ).forEach(MinecraftForge.EVENT_BUS::register)
-
-        arrayOf(
-            this,
             DungeonListener,
             MayorInfo,
             guiManager,

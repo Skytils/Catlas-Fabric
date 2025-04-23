@@ -20,35 +20,24 @@ package gg.skytils.skytilsmod.features.impl.dungeons
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.State
 import gg.skytils.event.EventSubscriber
+import gg.skytils.event.impl.play.ChatMessageReceivedEvent
+import gg.skytils.event.impl.play.WorldUnloadEvent
 import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod._event.DungeonPuzzleResetEvent
+import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import gg.skytils.skytilsmod.core.GuiManager
-import gg.skytils.skytilsmod.core.structure.GuiElement
 import gg.skytils.skytilsmod.core.tickTimer
-import gg.skytils.skytilsmod.events.impl.MainReceivePacketEvent
-import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures.dungeonFloorNumber
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
-import gg.skytils.skytilsmod.listeners.DungeonListener
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorChatComponentText
 import gg.skytils.skytilsmod.utils.*
-import gg.skytils.skytilsmod.utils.graphics.ScreenRenderer
-import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer.TextAlignment
-import gg.skytils.skytilsmod.utils.graphics.colors.CommonColors
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket
-import net.minecraft.text.LiteralTextContent
-import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.EventPriority
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-object ScoreCalculation: EventSubscriber {
+object ScoreCalculation : EventSubscriber {
 
     private val deathsTabPattern = Regex("§r§a§lTeam Deaths: §r§f(?<deaths>\\d+)§r")
     private val missingPuzzlePattern = Regex("§r§b§lPuzzles: §r§f\\((?<count>\\d)\\)§r")
@@ -259,59 +248,10 @@ object ScoreCalculation: EventSubscriber {
             }
         }
 
-    fun updateText(score: Int) {
-        Utils.checkThreadAndQueue {
-            ScoreCalculationElement.text.clear()
-            if (!Utils.inDungeons) return@checkThreadAndQueue
-            if (Skytils.config.minimizedScoreCalculation) {
-                val color = when {
-                    score < 270 -> 'c'
-                    score < 300 -> 'e'
-                    else -> 'a'
-                }
-                ScoreCalculationElement.text.add("§eScore: §$color$score §7($rank§7)")
-            } else {
-                ScoreCalculationElement.text.add("§9Dungeon Status")
-                ScoreCalculationElement.text.add("§f• §eDeaths:§c ${deaths.get()} ${if (firstDeathHadSpirit.get()) "§7(§6Spirit§7)" else ""}")
-                ScoreCalculationElement.text.add("§f• §eMissing Puzzles:§c ${missingPuzzles.get()}")
-                ScoreCalculationElement.text.add("§f• §eFailed Puzzles:§c ${failedPuzzles.get()}")
-                if (foundSecrets.get() > 0) ScoreCalculationElement.text.add(
-                    "§f• §eSecrets: ${if (foundSecrets.get() >= totalSecretsNeeded.get()) "§a" else "§c"}${foundSecrets.get()}§7/§a${totalSecretsNeeded.get()} " +
-                            if (floorReq.get().secretPercentage != 1.0) "§7(§6Total: ${totalSecrets.get()}§7)" else ""
-                )
-                ScoreCalculationElement.text.add("§f• §eCrypts:§a ${crypts.get()}")
-                if (dungeonFloorNumber?.let { it >= 6 } == true) {
-                    ScoreCalculationElement.text.add("§f• §eMimic:§l${if (mimicKilled.get()) "§a ✔" else "§c ✘"}")
-                }
-                ScoreCalculationElement.text.add("")
-                ScoreCalculationElement.text.add("§6Score")
-                if (DungeonFeatures.dungeonFloor == "E")
-                    ScoreCalculationElement.text.add("§f• §eSkill Score:§a ${skillScore.get().coerceIn(14, 70)}")
-                else
-                    ScoreCalculationElement.text.add("§f• §eSkill Score:§a ${skillScore.get().coerceIn(20, 100)}")
-                ScoreCalculationElement.text.add(
-                    "§f• §eExplore Score:§a ${discoveryScore.get()} §7(§e${
-                        roomClearScore.get().toInt()
-                    } §7+ §6${secretScore.get().toInt()}§7)"
-                )
-                ScoreCalculationElement.text.add("§f• §eSpeed Score:§a ${speedScore.get()}")
-
-                if (DungeonFeatures.dungeonFloor == "E") {
-                    ScoreCalculationElement.text.add("§f• §eBonus Score:§a ${ceil(bonusScore.get() * 0.7).toInt()}")
-                    ScoreCalculationElement.text.add("§f• §eTotal Score:§a $score" + if (isPaul.get()) " §7(§6+7§7)" else "")
-                } else {
-                    ScoreCalculationElement.text.add("§f• §eBonus Score:§a ${bonusScore.get()}")
-                    ScoreCalculationElement.text.add("§f• §eTotal Score:§a $score" + if (isPaul.get()) " §7(§6+10§7)" else "")
-                }
-                ScoreCalculationElement.text.add("§f• §eRank: $rank")
-
-            }
-        }
-    }
+    fun updateText(score: Int) {}
 
 
-    @SubscribeEvent
-    fun onScoreboardChange(event: MainReceivePacketEvent<*, *>) {
+    fun onScoreboardChange(event: MainThreadPacketReceiveEvent<*>) {
         if (
             !Utils.inSkyblock ||
             event.packet !is TeamS2CPacket
@@ -346,8 +286,7 @@ object ScoreCalculation: EventSubscriber {
         }
     }
 
-    @SubscribeEvent
-    fun onTabChange(event: MainReceivePacketEvent<*, *>) {
+    fun onTabChange(event: MainThreadPacketReceiveEvent<*>) {
         if (
             !Utils.inDungeons ||
             event.packet !is PlayerListS2CPacket ||
@@ -414,8 +353,7 @@ object ScoreCalculation: EventSubscriber {
         }
     }
 
-    @SubscribeEvent
-    fun onTitle(event: MainReceivePacketEvent<*, *>) {
+/*    fun onTitle(event: MainThreadPacketReceiveEvent<*>) {
         if (!Utils.inDungeons || event.packet !is TitleS2CPacket || event.packet.action != TitleS2CPacket.Action.TITLE) return
         if (event.packet.text.method_10865() == "§eYou became a ghost!§r") {
             if (DungeonListener.hutaoFans.getIfPresent(mc.player.name) == true
@@ -425,7 +363,7 @@ object ScoreCalculation: EventSubscriber {
             )
             printDevMessage({ "you died. spirit: ${firstDeathHadSpirit.get()}" }, "scorecalcdeath")
         }
-    }
+    }*/
 
     init {
         tickTimer(5, repeats = true) {
@@ -435,10 +373,9 @@ object ScoreCalculation: EventSubscriber {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    fun onChatReceived(event: ClientChatReceivedEvent) {
-        if (!Utils.inDungeons || mc.player == null || event.type == 2.toByte()) return
-        val unformatted = event.message.method_0_5147().stripControlCodes()
+    fun onChatReceived(event: ChatMessageReceivedEvent) {
+        if (!Utils.inDungeons || mc.player == null) return
+        val unformatted = event.message.string.stripControlCodes()
         if (Skytils.config.scoreCalculationReceiveAssist) {
             if (unformatted.startsWith("Party > ") || (unformatted.contains(":") && !unformatted.contains(">"))) {
                 if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-MIMIC$") || (Skytils.config.receiveHelpFromOtherModMimicDead && unformatted.containsAny(
@@ -449,7 +386,7 @@ object ScoreCalculation: EventSubscriber {
                     return
                 }
                 if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-ROOM$")) {
-                    event.isCanceled = true
+                    event.cancelled = true
                     return
                 }
             }
@@ -461,24 +398,7 @@ object ScoreCalculation: EventSubscriber {
         failedPuzzles.set((failedPuzzles.get() - 1).coerceAtLeast(0))
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    fun canYouPleaseStopCryingThanks(event: ClientChatReceivedEvent) {
-        if (!Utils.inDungeons || event.type != 0.toByte()) return
-        val unformatted = event.message.method_0_5147().stripControlCodes()
-        if ((unformatted.startsWith("Party > ") || unformatted.startsWith("P > ")) && unformatted.contains(": Skytils-SC > ")) {
-            event.message.siblings.filterIsInstance<LiteralTextContent>().forEach {
-                it as AccessorChatComponentText
-                if (it.text.startsWith("Skytils-SC > ")) {
-                    it.text = it.text.substringAfter("Skytils-SC > ")
-                } else if (it.text.startsWith("\$SKYTILS-DUNGEON-SCORE-MIMIC\$")) {
-                    it.text = it.text.replace("\$SKYTILS-DUNGEON-SCORE-MIMIC\$", "Mimic Killed!")
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    fun clearScore(event: WorldEvent.Unload) {
+    fun clearScore(event: WorldUnloadEvent) {
         mimicKilled.set(false)
         firstDeathHadSpirit.set(false)
         floorReq.set(floorRequirements["default"]!!)
@@ -494,105 +414,14 @@ object ScoreCalculation: EventSubscriber {
         totalRoomMap.clear()
     }
 
-    init {
-        ScoreCalculationElement()
-        HugeCryptsCounter()
-    }
-
-    class HugeCryptsCounter : GuiElement("Dungeon Crypts Counter", scale = 2f, x = 200, y = 200) {
-        override fun render() {
-            if (toggled && Utils.inDungeons && DungeonTimer.dungeonStartTime != -1L) {
-
-                val leftAlign = scaleX < sr.scaledWidth / 2f
-                ScreenRenderer.fontRenderer.drawString(
-                    "Crypts: ${crypts.get()}",
-                    if (leftAlign) 0f else width.toFloat(),
-                    0f,
-                    alignment = if (leftAlign) TextAlignment.LEFT_RIGHT else TextAlignment.RIGHT_LEFT,
-                    customColor = if (crypts.get() < 5) CommonColors.RED else CommonColors.LIGHT_GREEN
-                )
-            }
-        }
-
-        override fun demoRender() {
-
-            val leftAlign = scaleX < sr.scaledWidth / 2f
-            ScreenRenderer.fontRenderer.drawString(
-                "Crypts: 5",
-                if (leftAlign) 0f else width.toFloat(),
-                0f,
-                alignment = if (leftAlign) TextAlignment.LEFT_RIGHT else TextAlignment.RIGHT_LEFT,
-                customColor = CommonColors.LIGHT_GREEN
-            )
-        }
-
-        override val toggled: Boolean
-            get() = Skytils.config.bigCryptsCounter
-        override val height: Int
-            get() = fr.field_0_2811
-        override val width: Int
-            get() = fr.getWidth("Crypts: 5")
-
-        init {
-            Skytils.guiManager.registerElement(this)
-        }
-    }
-
-    class ScoreCalculationElement : GuiElement("Dungeon Score Estimate", x = 200, y = 100) {
-        override fun render() {
-            if (toggled && Utils.inDungeons) {
-                RenderUtil.drawAllInList(this, text)
-            }
-        }
-
-        override fun demoRender() {
-            if (Skytils.config.minimizedScoreCalculation) {
-                RenderUtil.drawAllInList(this, demoMin)
-            } else {
-                RenderUtil.drawAllInList(this, demoText)
-            }
-        }
-
-        companion object {
-            private val demoText = listOf(
-                "§9Dungeon Status",
-                "§f• §eDeaths:§c 0",
-                "§f• §eMissing Puzzles:§c 0",
-                "§f• §eFailed Puzzles:§c 0",
-                "§f• §eSecrets: §a50§7/§a50 §7(§6Total: 50§7)",
-                "§f• §eCrypts:§a 5",
-                "§f• §eMimic:§a ✔",
-                "",
-                "§6Score",
-                "§f• §eSkill Score:§a 100",
-                "§f• §eExplore Score:§a 100 §7(§e60 §7+ §640§7)",
-                "§f• §eSpeed Score:§a 100",
-                "§f• §eBonus Score:§a 17",
-                "§f• §eTotal Score:§a 317 §7(§6+10§7)",
-                "§f• §eRank: §6§lS+"
-            )
-            private val demoMin = listOf("§eScore: §e300 §7(§6§lS+§7)")
-            val text = ArrayList<String>()
-        }
-
-        override val height: Int
-            get() = if (Skytils.config.minimizedScoreCalculation) ScreenRenderer.fontRenderer.field_0_2811 else ScreenRenderer.fontRenderer.field_0_2811 * demoText.size
-        override val width: Int
-            get() = demoText.maxOf { ScreenRenderer.fontRenderer.getWidth(it) }
-
-        override val toggled: Boolean
-            get() = Skytils.config.showScoreCalculation
-
-        init {
-            Skytils.guiManager.registerElement(this)
-        }
-    }
-
     data class FloorRequirement(val secretPercentage: Double = 1.0, val speed: Int = 10 * 60)
 
     private fun Boolean.ifTrue(num: Int) = if (this) num else 0
 
     override fun setup() {
+        register(::clearScore)
         register(::onPuzzleReset)
+        register(::onScoreboardChange)
+        register(::onTabChange)
     }
 }

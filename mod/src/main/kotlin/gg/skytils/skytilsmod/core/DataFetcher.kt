@@ -25,7 +25,6 @@ import gg.skytils.skytilsmod.Skytils.domain
 import gg.skytils.skytilsmod.Skytils.failPrefix
 import gg.skytils.skytilsmod.features.impl.handlers.Mayor
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
-import gg.skytils.skytilsmod.utils.SkillUtils
 import gg.skytils.skytilsmod.utils.Utils
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -45,22 +44,6 @@ object DataFetcher {
                 get<String>("${dataUrl}constants/domain.txt") {
                     if (isNotBlank()) {
                         domain = trim()
-                    }
-                }
-                get<LevelingXPData>("${dataUrl}constants/levelingxp.json") {
-                    Utils.checkThreadAndQueue {
-                        SkillUtils.maxSkillLevels.clear()
-                        SkillUtils.maxSkillLevels.putAll(defaultCaps)
-                        SkillUtils.skillXp.clear()
-                        SkillUtils.skillXp.putAll(levelingXP)
-                        SkillUtils.dungeoneeringXp.clear()
-                        SkillUtils.dungeoneeringXp.putAll(dungeonXp)
-                        SkillUtils.slayerXp.clear()
-                        SkillUtils.slayerXp.putAll(slayerXp)
-                        SkillUtils.runeXp.clear()
-                        SkillUtils.runeXp.putAll(runeXp)
-                        SkillUtils.hotmXp.clear()
-                        SkillUtils.runeXp.putAll(hotmXp)
                     }
                 }
                 get<List<Mayor>>("${dataUrl}constants/mayors.json") {
