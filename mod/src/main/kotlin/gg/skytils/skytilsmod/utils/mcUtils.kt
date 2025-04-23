@@ -38,6 +38,8 @@ import net.minecraft.util.math.Vec3i
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.text.Text
+
 //#endif
 
 val isDeobfuscatedEnvironment = State {
@@ -98,3 +100,6 @@ val ItemStack.displayNameStr: String
         //#if MC>=11600
         .string
         //#endif
+
+val Text.formattedText: String
+    get() = ControlCodeVisitor().also { visitor -> visit(visitor, style) }.getFormattedString()

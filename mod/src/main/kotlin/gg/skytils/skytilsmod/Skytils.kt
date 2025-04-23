@@ -38,12 +38,10 @@ import gg.skytils.skytilsmod.features.impl.handlers.*
 import gg.skytils.skytilsmod.features.impl.misc.*
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
-import gg.skytils.skytilsmod.listeners.ChatListener
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
 import gg.skytils.skytilsmod.mixins.extensions.ExtensionEntityLivingBase
 import gg.skytils.skytilsmod.mixins.hooks.entity.EntityPlayerSPHook
-import gg.skytils.skytilsmod.mixins.hooks.util.MouseHelperHook
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
@@ -285,7 +283,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         arrayOf(
             this,
-            ChatListener,
             DungeonListener,
             MayorInfo,
             guiManager,
@@ -462,11 +459,6 @@ object Skytils : CoroutineScope, EventSubscriber {
                     if (mc.player?.currentScreenHandler is PlayerScreenHandler)
                         displayScreen = OptionsGui()
                 }
-            }
-        }
-        if (old is AccessorGuiStreamUnavailable) {
-            if (config.twitchFix && event.screen == null && !(Utils.inSkyblock && old.parentScreen is DeathScreen)) {
-                event.screen = old.parentScreen
             }
         }
     }

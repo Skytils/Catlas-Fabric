@@ -16,14 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.skytils.skytilsmod.util
+package gg.skytils.skytilsmod.utils
 
-import gg.skytils.skytilsmod.utils.stripControlCodes
 import net.minecraft.text.CharacterVisitor
 import net.minecraft.text.StringVisitable
 import net.minecraft.text.Style
 import net.minecraft.util.Formatting
-import java.util.*
+import java.util.Optional
 
 /**
  * This class visits a text instance and can be used to retrieve a version of the text
