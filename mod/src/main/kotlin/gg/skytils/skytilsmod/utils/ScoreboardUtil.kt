@@ -26,7 +26,7 @@ import net.minecraft.scoreboard.*
 object ScoreboardUtil {
     @JvmStatic
     fun cleanSB(scoreboard: String): String {
-        return scoreboard.stripControlCodes().toCharArray().filter { it.code in 32..126 }.joinToString(separator = "")
+        return scoreboard.replace(Regex("(?i)§."), "").toCharArray().filter { it.code in 32..126 }.joinToString(separator = "")
     }
 
     var sidebarLines: List<String> = emptyList()
@@ -59,7 +59,7 @@ object ScoreboardUtil {
             //#if MC<11400
             //$$ Team.method_1142(scoreboard.getPlayerTeam(e.playerName), e.playerName)
             //#else
-            Team.decorateName(scoreboard.getScoreHolderTeam(e.owner()), e.name()).string
+            Team.decorateName(scoreboard.getScoreHolderTeam(e.owner()), e.name()).formattedText
             //#endif
         }.asReversed()
     }
