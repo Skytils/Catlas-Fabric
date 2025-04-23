@@ -28,6 +28,7 @@ import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorMapState
 import gg.skytils.skytilsmod.utils.Utils
 import net.minecraft.block.Blocks
+import net.minecraft.item.map.MapDecorationTypes
 import net.minecraft.util.math.BlockPos
 import net.minecraft.item.map.MapState
 import net.minecraft.world.chunk.ChunkStatus
@@ -41,12 +42,12 @@ object MapUpdater {
         DungeonListener.team.forEach { (name, team) ->
             val player = team.mapPlayer
             mapData.decorationsMap[player.icon]?.let { decoration ->
-                player.isOurMarker = name == mc.player!!.gameProfile.name
+                player.isOurMarker = decoration.type.matches(MapDecorationTypes.FRAME)
                 player.mapX = decoration.mapX
                 player.mapZ = decoration.mapZ
                 player.yaw = decoration.yaw
             }
-            if (player.isOurMarker || name == mc.player!!.name.string) {
+            if (player.isOurMarker || name == mc.player!!.gameProfile.name) {
                 player.yaw = mc.player!!.yaw
                 player.mapX =
                     ((mc.player!!.x - DungeonScanner.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first).roundToInt()
