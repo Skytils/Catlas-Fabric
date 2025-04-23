@@ -24,9 +24,11 @@ import net.minecraft.scoreboard.*
  * Source: Mojang [net.minecraft.client.gui.GuiIngame.renderScoreboard]]
  */
 object ScoreboardUtil {
+    private val controlCodeLike = Regex("(?i)§.")
+
     @JvmStatic
     fun cleanSB(scoreboard: String): String {
-        return scoreboard.replace(Regex("(?i)§."), "").toCharArray().filter { it.code in 32..126 }.joinToString(separator = "")
+        return scoreboard.replace(controlCodeLike, "").toCharArray().filter { it.code in 32..126 }.joinToString(separator = "")
     }
 
     var sidebarLines: List<String> = emptyList()

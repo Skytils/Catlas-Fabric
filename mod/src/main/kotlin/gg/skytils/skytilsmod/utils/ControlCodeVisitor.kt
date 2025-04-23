@@ -67,7 +67,7 @@ class ControlCodeVisitor : CharacterVisitor, StringVisitable.StyledVisitor<Strin
         return builder.toString()
     }
 
-    fun getFormattedString() = builder.toString()
+    fun getFormattedString() = builder.append("§r").toString()
 
     // Just use getString() on the text instance lol
     fun getUnformattedString() = builder.toString().stripControlCodes()
