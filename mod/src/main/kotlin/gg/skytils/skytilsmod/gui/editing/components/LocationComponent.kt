@@ -27,7 +27,10 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.utils.withAlpha
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UResolution
+import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.core.structure.GuiElement
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.render.RenderTickCounter
 import java.awt.Color
 
 class LocationComponent(val element: GuiElement) : UIComponent() {
@@ -104,7 +107,9 @@ class LocationComponent(val element: GuiElement) : UIComponent() {
         matrixStack.push()
         matrixStack.translate(getLeft(), getTop(), 0f)
         matrixStack.scale(element.scale, element.scale, 1f)
-        matrixStack.runWithGlobalState(element::demoRender)
+        matrixStack.runWithGlobalState {
+            element.demoRender(DrawContext(mc, mc.bufferBuilders.entityVertexConsumers), RenderTickCounter.ONE)
+        }
         matrixStack.pop()
     }
 }
