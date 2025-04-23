@@ -25,26 +25,28 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils.mapX
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils.mapZ
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils.yaw
 import gg.skytils.skytilsmod.listeners.DungeonListener
+import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorMapState
 import gg.skytils.skytilsmod.utils.Utils
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.item.map.MapState
+import net.minecraft.world.chunk.ChunkStatus
 import kotlin.math.roundToInt
 
 object MapUpdater {
     fun updatePlayers(mapData: MapState) {
         if (DungeonListener.team.isEmpty()) return
 
-        val decor = mapData.decorations
+        mapData as AccessorMapState
         DungeonListener.team.forEach { (name, team) ->
             val player = team.mapPlayer
-            decor.entries.find { (icon, _) -> icon == player.icon }?.let { (_, vec4b) ->
-                player.isOurMarker = vec4b.typeId.toInt() == 1
-                player.mapX = vec4b.mapX
-                player.mapZ = vec4b.mapZ
-                player.yaw = vec4b.yaw
+            mapData.decorationsMap[player.icon]?.let { decoration ->
+                player.isOurMarker = name == mc.player!!.gameProfile.name
+                player.mapX = decoration.mapX
+                player.mapZ = decoration.mapZ
+                player.yaw = decoration.yaw
             }
-            if (player.isOurMarker || name == mc.player!!.name) {
+            if (player.isOurMarker || name == mc.player!!.name.string) {
                 player.yaw = mc.player!!.yaw
                 player.mapX =
                     ((mc.player!!.x - DungeonScanner.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first).roundToInt()
@@ -94,20 +96,9 @@ object MapUpdater {
                     if (mapTile is Door && mapTile.type == DoorType.WITHER) {
                         room.opened = false
                     } else if (!room.opened) {
-                        //#if MC==10809
-                        //$$ val chunk = mc.world!!.method_0_271(
-                        //#else
                         val chunk = mc.world!!.getChunk(room.x shr 4, room.z shr 4)
-                        //#endif
-                            room.x shr 4,
-                            room.z shr 4
-                        )
 
-                        //#if MC==10809
-                        //$$ if (chunk.method_12229()) {
-                        //#else
-                        if (mc.world!!.chunkManager.getChunk(xPos shr 4, zPos shr 4, ChunkStatus.FULL, false) != null) {
-                        //#endif
+                        if (mc.world!!.chunkManager.getChunk(room.x shr 4, room.z shr 4, ChunkStatus.FULL, false) != null) {
                             if (chunk.getBlockState(BlockPos(room.x, 69, room.z)).block == Blocks.AIR)
                             room.opened = true
                         } else if (mapTile is Door && mapTile.state == RoomState.DISCOVERED) {

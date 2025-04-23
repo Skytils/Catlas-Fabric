@@ -29,15 +29,19 @@ import gg.skytils.skytilsmod.utils.SBInfo
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.multiplatform.EquipmentSlot
 import gg.skytils.skytilsws.client.WSClient
-import gg.skytils.skytilsws.shared.SkytilsWS
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonMimic
-import net.minecraft.entity.mob.ZombieEntity
 import net.minecraft.block.Blocks
+import net.minecraft.component.DataComponentTypes
+import net.minecraft.entity.mob.ZombieEntity
+import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 object MimicDetector : EventSubscriber {
     var mimicOpenTime = 0L
     var mimicPos: BlockPos? = null
+    val mimicSkullUUID: UUID = UUID.fromString("ae55953f-605e-3c71-a813-310c028de150")
 
     override fun setup() {
         register(::onBlockChange)
@@ -54,11 +58,7 @@ object MimicDetector : EventSubscriber {
     fun onEntityDeath(event: LivingEntityDeathEvent) {
         if (!Utils.inDungeons) return
         val entity = event.entity as? ZombieEntity ?: return
-        //#if MC==10809
-        //$$ if (entity.isBaby && (0..3).all { entity.method_0_7157(it) == null }) {
-        //#else
         if (entity.isBaby && entity.armorItems.all { it == ItemStack.EMPTY }) {
-        //#endif
             if (!ScoreCalculation.mimicKilled.get()) {
                 ScoreCalculation.mimicKilled.set(true)
                 if (Skytils.config.scoreCalculationAssist) {
@@ -76,12 +76,8 @@ object MimicDetector : EventSubscriber {
         if (mc.player!!.blockPos.getSquaredDistance(mimicPos) < 400) {
             if (mc.world!!.entities.none {
                     it is ZombieEntity && it.isBaby && it.getEquippedStack(EquipmentSlot.HEAD)
-                        //#if MC==10809
-                        //$$ ?.getOrCreateSubNbt("SkullOwner", false)
-                        //#else
-                        ?.getSubNbt("SkullOwner")
-                        //#endif
-                        ?.getString("Id") == "ae55953f-605e-3c71-a813-310c028de150"
+                        .get(DataComponentTypes.PROFILE)
+                        ?.id?.getOrNull() == mimicSkullUUID
                 }) {
                 ScoreCalculation.mimicKilled.set(true)
                 if (Skytils.config.scoreCalculationAssist) {

@@ -40,21 +40,16 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MapUpdater
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MimicDetector
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
-import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.DungeonListener.outboundRoomQueue
 import gg.skytils.skytilsmod.utils.RenderUtil
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.printDevMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import net.minecraft.item.FilledMapItem
+import net.minecraft.item.map.MapDecorationTypes
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket
 import net.minecraft.util.math.Box
-import net.minecraft.item.map.MapState
-
-//#if MC>=11600
-import net.minecraft.item.FilledMapItem
-import net.minecraft.item.map.MapDecoration
-//#endif
 
 object Catlas : EventSubscriber {
 
@@ -115,7 +110,7 @@ object Catlas : EventSubscriber {
                     it.state = RoomState.PREVISITED
                 }
             }
-            DungeonListener.team[player.name]?.mapPlayer?.yaw = player.yaw
+            // DungeonListener.team[player.name]?.mapPlayer?.yaw = player.yaw
         }
     }
 
@@ -164,17 +159,11 @@ object Catlas : EventSubscriber {
     fun onPacket(event: PacketReceiveEvent<*>) {
         if (event.packet is MapUpdateS2CPacket && Utils.inDungeons && DungeonInfo.dungeonMap == null) {
             val world = mc.world ?: return
-            val id = event.packet.id
-            if (id and 1000 == 0) {
-                //#if MC==10809
-                //$$ val guess = world.method_0_259().method_120(MapState::class.java, "map_${id}") as MapState? ?: return
-                //$$ if (guess.icons.any { it.value.typeId == 1.toByte() }) {
-                //#else
-                val guess = FilledMapItem.getMapState(id, world) ?: return
-                if (guess.decorations.any { it.type == MapDecoration.Type.PLAYER }) {
-                //#endif
-                    DungeonInfo.guessMapData = guess
-                }
+            val id = event.packet.mapId
+            val guess = FilledMapItem.getMapState(id, world) ?: return
+
+            if (guess.decorations.any { it.type.matches(MapDecorationTypes.PLAYER) }) {
+                DungeonInfo.guessMapData = guess
             }
         }
     }

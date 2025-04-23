@@ -48,11 +48,7 @@ object MapUtils {
     fun getMapData(): MapState? {
         val map = mc.player?.inventory?.getStack(8) ?: return null
         if (map.item !is FilledMapItem || !map.displayNameStr.contains("Magical Map")) return null
-        //#if MC==10809
-        //$$ return (map.item as FilledMapItem).method_8001(map, mc.world)
-        //#else
         return FilledMapItem.getMapState(map, mc.world!!)
-        //#endif
     }
 
     /**

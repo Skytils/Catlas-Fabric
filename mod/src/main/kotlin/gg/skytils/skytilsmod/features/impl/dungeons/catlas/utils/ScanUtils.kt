@@ -28,23 +28,16 @@ import gg.skytils.skytilsmod.utils.Utils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
 import net.minecraft.block.Block
-import net.minecraft.util.math.BlockPos
 import net.minecraft.util.Identifier
-import kotlin.math.roundToInt
-
-//#if MC>=12000
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
-//#endif
+import kotlin.math.roundToInt
 
 object ScanUtils {
     @OptIn(ExperimentalSerializationApi::class)
     val roomList: Set<RoomData> by lazy {
-        //#if MC==10809
-        //$$ mc.resourceManager.method_14486(
-        //#else
         mc.resourceManager.getResourceOrThrow(
-        //#endif
-            Identifier("catlas:rooms.json")
+            Identifier.of("catlas:rooms.json")
         ).inputStream.use(json::decodeFromStream)
     }
 
@@ -71,18 +64,8 @@ object ScanUtils {
 
     fun getCore(x: Int, z: Int): Int {
         val sb = StringBuilder(150)
-        //#if MC==10809
-        //$$ val chunk = mc.world!!.method_0_271(x shr 4, z shr 4)
-        //#else
         val chunk = mc.world!!.getChunk(x shr 4, z shr 4)
-        //#endif
-        val height =
-            //#if MC==10809
-            //$$ chunk.method_0_1367(x and 15, z and 15)
-            //#else
-            chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE).get(x and 15, z and 15)
-            //#endif
-                .coerceIn(11..140)
+        val height = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE).get(x and 15, z and 15).coerceIn(11..140)
         sb.append(CharArray(140 - height) { '0' })
         var bedrock = 0
         for (y in height downTo 12) {

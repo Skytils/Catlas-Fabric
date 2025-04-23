@@ -15,6 +15,7 @@
     "accessors.AccessorGuiNewChat",
     "accessors.AccessorHypixelModAPI",
     "accessors.AccessorHypixelPacketRegistry",
+    "accessors.AccessorMapState",
     "accessors.AccessorMinecraft",
     "accessors.AccessorModelDragon",
     "accessors.AccessorS3BPacketScoreboardObjective",
@@ -30,6 +31,6 @@
     "events.MixinNetHandlerPlayClient",
     "events.MixinNetworkManager",
     "events.MixinPacketThreadUtil",
-    "gui.MixinGuiIngameMenu",
+    "gui.MixinGuiIngameMenu"
   ]
 }
