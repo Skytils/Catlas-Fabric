@@ -53,7 +53,7 @@ import net.minecraft.item.map.MapState
 
 //#if MC>=11600
 import net.minecraft.item.FilledMapItem
-import net.minecraft.item.map.MapIcon
+import net.minecraft.item.map.MapDecoration
 //#endif
 
 object Catlas : EventSubscriber {
@@ -171,7 +171,7 @@ object Catlas : EventSubscriber {
                 //$$ if (guess.icons.any { it.value.typeId == 1.toByte() }) {
                 //#else
                 val guess = FilledMapItem.getMapState(id, world) ?: return
-                if (guess.icons.any { it.type == MapIcon.Type.PLAYER }) {
+                if (guess.decorations.any { it.type == MapDecoration.Type.PLAYER }) {
                 //#endif
                     DungeonInfo.guessMapData = guess
                 }

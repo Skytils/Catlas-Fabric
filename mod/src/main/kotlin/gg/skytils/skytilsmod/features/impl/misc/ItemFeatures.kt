@@ -480,7 +480,7 @@ object ItemFeatures : EventSubscriber {
         event.packet.apply {
             if (this is ParticleS2CPacket) {
                 if (type == ParticleType.EXPLOSION_LARGE && Skytils.config.hideImplosionParticles) {
-                    if (isLongDistance && count == 8 && speed == 8f && offsetX == 0f && offsetY == 0f && offsetZ == 0f) {
+                    if (shouldForceSpawn() && count == 8 && speed == 8f && offsetX == 0f && offsetY == 0f && offsetZ == 0f) {
                         val dist = (if (DungeonFeatures.hasBossSpawned && dungeonFloorNumber == 7) 4f else 11f).pow(2f)
 
                         if (mc.world.players.any {

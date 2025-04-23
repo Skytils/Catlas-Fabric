@@ -26,18 +26,18 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScann
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.displayNameStr
 import net.minecraft.item.FilledMapItem
-import net.minecraft.item.map.MapIcon
+import net.minecraft.item.map.MapDecoration
 import net.minecraft.item.map.MapState
 
 object MapUtils {
 
-    val MapIcon.mapX
+    val MapDecoration.mapX
         get() = (this.x + 128) shr 1
 
-    val MapIcon.mapZ
+    val MapDecoration.mapZ
         get() = (this.z + 128) shr 1
 
-    val MapIcon.yaw
+    val MapDecoration.yaw
         get() = this.rotation * 22.5f
 
     var startCorner = Pair(5, 5)

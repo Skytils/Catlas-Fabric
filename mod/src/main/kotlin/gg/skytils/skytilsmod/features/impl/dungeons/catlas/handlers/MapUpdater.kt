@@ -35,7 +35,7 @@ object MapUpdater {
     fun updatePlayers(mapData: MapState) {
         if (DungeonListener.team.isEmpty()) return
 
-        val decor = mapData.icons
+        val decor = mapData.decorations
         DungeonListener.team.forEach { (name, team) ->
             val player = team.mapPlayer
             decor.entries.find { (icon, _) -> icon == player.icon }?.let { (_, vec4b) ->

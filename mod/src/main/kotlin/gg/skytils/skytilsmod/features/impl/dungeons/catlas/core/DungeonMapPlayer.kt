@@ -20,7 +20,7 @@ package gg.skytils.skytilsmod.features.impl.dungeons.catlas.core
 
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.client.render.entity.PlayerModelPart
+import net.minecraft.entity.player.PlayerModelPart
 import net.minecraft.util.Identifier
 
 data class DungeonMapPlayer(val teammate: DungeonListener.DungeonTeammate) {
