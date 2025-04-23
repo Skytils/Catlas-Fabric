@@ -1,0 +1,42 @@
+net.minecraft.entity.data.DataTracker$SerializedEntry net.minecraft.entity.data.DataTracker$Entry
+net.minecraft.entity.data.DataTracker$SerializedEntry id() net.minecraft.entity.data.DataTracker$Entry method_12797()
+net.minecraft.entity.data.DataTracker$SerializedEntry value() net.minecraft.entity.data.DataTracker$Entry get()
+net.minecraft.world.World getBlockState() net.minecraft.world.World method_0_484()
+net.minecraft.block.AbstractBlock.AbstractBlockState getBlock() net.minecraft.class_0_378 method_0_1225()
+
+# the left side is actually a method, but it will replace correctly for kotlin
+net.minecraft.world.World entities net.minecraft.world.World field_0_260
+
+net.minecraft.util.math.BlockPos down() method_10074()
+net.minecraft.util.math.BlockPos down() method_10087()
+# https://github.com/Legacy-Fabric/yarn/pull/285
+net.minecraft.util.math.BlockPos offset() method_10093()
+net.minecraft.util.math.BlockPos offset() method_10079()
+
+net.minecraft.item.Items PLAYER_HEAD net.minecraft.item.Items SKULL
+
+net.minecraft.entity.Entity isRemoved net.minecraft.entity.Entity removed
+
+net.minecraft.network.packet.s2c.play.EntityS2CPacket getDeltaX() net.minecraft.network.packet.s2c.play.EntityS2CPacket method_11648()
+net.minecraft.network.packet.s2c.play.EntityS2CPacket getDeltaY() net.minecraft.network.packet.s2c.play.EntityS2CPacket method_11646()
+net.minecraft.network.packet.s2c.play.EntityS2CPacket getDeltaZ() net.minecraft.network.packet.s2c.play.EntityS2CPacket method_11647()
+
+net.minecraft.world.EntityView getEntitiesByClass() net.minecraft.world.World method_8390()
+
+com.mojang.blaze3d.systems.RenderSystem net.minecraft.client.GlStateManager
+
+net.minecraft.text.Text getString() method_0_5147()
+
+net.minecraft.util.math.Direction.Type HORIZONTAL net.minecraft.util.math.Direction HORIZONTAL
+net.minecraft.util.math.Direction.Type VERTICAL net.minecraft.util.math.Direction VERTICAL
+
+net.minecraft.world.World getChunk method_0_271
+net.minecraft.client.world.ClientWorld getChunk method_0_271
+
+net.minecraft.resource.ResourceFactory getResourceOrThrow method_14486
+net.minecraft.resource.ResourceManager getResourceOrThrow method_14486
+
+net.minecraft.client.render.entity.EnderDragonEntityRenderer$DragonEntityModel net.minecraft.client.render.entity.model.DragonEntityModel
+net.minecraft.client.world.ClientWorld players net.minecraft.world.World field_9228
+
+net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket

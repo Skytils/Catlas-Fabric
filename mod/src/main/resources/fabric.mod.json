@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "skytils",
+  "version": "${version}",
+  "name": "Skytils",
+  "description": "Skytils is a Hypixel Skyblock Quality of Life mod for Fabric!",
+  "authors": [
+    "My-Name-Is-Jeff",
+    "Sychic"
+  ],
+  "contact": {
+    "homepage": "https://discord.gg/skytils",
+    "sources": "https://github.com/Skytils/SkytilsMod"
+  },
+  "license": "AGPL-3.0-or-later",
+  "icon": "assets/skytils/logo.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.skytils.skytilsmod.SkytilsMod"
+      }
+    ],
+    "prelaunch": [
+      "gg.skytils.skytilsmod.tweaker.SkytilsPreLaunch"
+    ]
+  },
+  "mixins": [
+    "mixins.skytils.json",
+    "mixins.skytils-events.json"
+  ],
+  "depends": {
+    "essential-loader": ">=1.2.3",
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*",
+    "hypixel-mod-api": ">=1.0.1",
+    "minecraft": "*",
+    "java": "*"
+  }
+}
