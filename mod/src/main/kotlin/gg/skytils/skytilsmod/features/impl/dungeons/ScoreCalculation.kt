@@ -23,11 +23,9 @@ import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.play.ChatMessageReceivedEvent
 import gg.skytils.event.impl.play.WorldUnloadEvent
 import gg.skytils.event.register
-import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod._event.DungeonPuzzleResetEvent
 import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
-import gg.skytils.skytilsmod.core.GuiManager
 import gg.skytils.skytilsmod.core.tickTimer
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
 import gg.skytils.skytilsmod.utils.*
@@ -231,11 +229,11 @@ object ScoreCalculation : EventSubscriber {
             !Utils.inSkyblock ||
             event.packet !is TeamS2CPacket
         ) return
-        if (event.packet.mode != 2) return
-        val line = event.packet.playerList.joinToString(
+        if (event.packet.playerListOperation != null || event.packet.teamOperation != null) return
+        val line = event.packet.playerNames.joinToString(
             " ",
-            prefix = event.packet.method_0_5600(),
-            postfix = event.packet.method_0_5601()
+            prefix = event.packet.team.get().prefix.formattedText,
+            postfix = event.packet.team.get().suffix.formattedText
         ).stripControlCodes()
         printDevMessage(line, "scorecalcscoreboard")
         if (line.startsWith("Cleared: ")) {
@@ -265,11 +263,11 @@ object ScoreCalculation : EventSubscriber {
         if (
             !Utils.inDungeons ||
             event.packet !is PlayerListS2CPacket ||
-            (event.packet.action != PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME &&
-                    event.packet.action != PlayerListS2CPacket.Action.ADD_PLAYER)
+            (PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME !in event.packet.actions &&
+                    PlayerListS2CPacket.Action.ADD_PLAYER !in event.packet.actions)
         ) return
         event.packet.entries.forEach { playerData ->
-            val name = playerData?.displayName?.method_10865() ?: playerData?.profile?.name ?: return@forEach
+            val name = playerData.text ?: return@forEach
             printDevMessage(name, "scorecalctab")
             when {
                 name.contains("Deaths:") -> {
@@ -352,9 +350,9 @@ object ScoreCalculation : EventSubscriber {
         if (!Utils.inDungeons || mc.player == null) return
         val unformatted = event.message.string.stripControlCodes()
         if (unformatted.startsWith("Party > ") || (unformatted.contains(":") && !unformatted.contains(">"))) {
-            if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-MIMIC$") || (Skytils.config.receiveHelpFromOtherModMimicDead && unformatted.containsAny(
+            if (unformatted.contains("\$SKYTILS-DUNGEON-SCORE-MIMIC$") || unformatted.containsAny(
                     "Mimic dead!", "Mimic Killed!", "Mimic Dead!"
-                ))
+                )
             ) {
                 mimicKilled.set(true)
                 return
