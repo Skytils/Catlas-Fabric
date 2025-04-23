@@ -1,6 +1,6 @@
 /*
  * Skytils - Hypixel Skyblock Quality of Life Mod
- * Copyright (C) 2020-2023 Skytils
+ * Copyright (C) 2020-2025 Skytils
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -52,9 +52,6 @@ class LocationComponent(val element: GuiElement) : UIComponent() {
                         width = element.scaleWidth.pixels
                         height = element.scaleHeight.pixels
                     }
-                }
-                2 -> {
-                    element.textShadow = SmartFontRenderer.TextShadow.entries[(element.textShadow.ordinal + 1) % SmartFontRenderer.TextShadow.entries.size]
                 }
                 else -> {
                     constrain {

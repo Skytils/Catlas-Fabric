@@ -23,37 +23,19 @@ import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.gui.settings.CheckboxComponent
-import gg.skytils.event.postSync
 import gg.skytils.hypixel.types.skyblock.Pet
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
-import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
-import gg.skytils.skytilsmod._event.PacketReceiveEvent
-import gg.skytils.skytilsmod.events.impl.MainReceivePacketEvent
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorWorldInfo
 import gg.skytils.skytilsmod.utils.NumberUtil.roundToPrecision
-import gg.skytils.skytilsmod.utils.graphics.colors.ColorFactory.web
-import gg.skytils.skytilsmod.utils.graphics.colors.CustomColor
-import gg.skytils.skytilsmod.utils.graphics.colors.CyclingTwoColorGradient
-import gg.skytils.skytilsmod.utils.graphics.colors.RainbowColor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.minecraft.client.network.ClientPlayNetworkHandler
-import net.minecraft.client.option.GameOptions
 import net.minecraft.entity.Entity
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.text.HoverEvent
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtList
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket
-import net.minecraft.particle.ParticleType
+import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
 import net.minecraft.util.*
 import net.minecraft.util.math.*
-import net.minecraft.world.World
 import org.objectweb.asm.tree.MethodInsnNode
 import java.awt.Color
 import java.io.File
@@ -116,37 +98,6 @@ object Utils {
         }
         return false
     }
-
-    fun customColorFromString(string: String?): CustomColor {
-        if (string == null) throw NullPointerException("Argument cannot be null!")
-        return if (string.startsWith("rainbow(")) {
-            RainbowColor.fromString(string)
-        } else if (string.startsWith("cyclingtwocolorgradient(")) {
-            CyclingTwoColorGradient.fromString(string)
-        } else try {
-            getCustomColorFromColor(web(string))
-        } catch (e: IllegalArgumentException) {
-            try {
-                CustomColor.fromInt(string.toInt())
-            } catch (ignored: NumberFormatException) {
-                throw e
-            }
-        }
-    }
-
-    fun colorFromString(string: String): Color {
-        return try {
-            web(string)
-        } catch (e: IllegalArgumentException) {
-            try {
-                Color(string.toInt(), true)
-            } catch (ignored: NumberFormatException) {
-                throw e
-            }
-        }
-    }
-
-    private fun getCustomColorFromColor(color: Color) = CustomColor.fromInt(color.rgb)
 
     fun checkThreadAndQueue(run: () -> Unit) {
         if (!mc.isOnThread) {

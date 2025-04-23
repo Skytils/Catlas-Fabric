@@ -23,13 +23,12 @@ import gg.skytils.skytilsmod.core.GuiManager
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderTickCounter
 
-abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float, var y: Float, var textShadow: SmartFontRenderer.TextShadow = SmartFontRenderer.TextShadow.NORMAL) {
-    constructor(name: String, scale: Float = 1f, x: Int, y: Int, textShadow: SmartFontRenderer.TextShadow = SmartFontRenderer.TextShadow.NORMAL) : this(
+abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float, var y: Float) {
+    constructor(name: String, scale: Float = 1f, x: Int, y: Int) : this(
         name,
         scale,
         (x / UResolution.scaledWidth).toFloat(),
         (y / UResolution.scaledHeight).toFloat(),
-        textShadow
     )
 
     abstract fun render(context: DrawContext, tickCounter: RenderTickCounter)
@@ -50,10 +49,9 @@ abstract class GuiElement(var name: String, var scale: Float = 1f, var x: Float,
     fun applyMetadata(metadata: GuiManager.GuiElementMetadata) {
         setPos(metadata.x, metadata.y)
         scale = metadata.scale
-        textShadow = metadata.textShadow
     }
 
-    fun asMetadata() = GuiManager.GuiElementMetadata(x, y, scale, textShadow)
+    fun asMetadata() = GuiManager.GuiElementMetadata(x, y, scale)
 
     val scaleX: Float
         get() {

@@ -27,20 +27,23 @@ import gg.skytils.event.impl.screen.ScreenOpenEvent
 import gg.skytils.event.register
 import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import gg.skytils.skytilsmod._event.PacketSendEvent
-import gg.skytils.skytilsmod.commands.impl.*
 import gg.skytils.skytilsmod.core.*
 import gg.skytils.skytilsmod.features.impl.dungeons.*
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.Catlas
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasElement
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.handlers.*
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
+import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
-import gg.skytils.skytilsmod.utils.graphics.colors.CustomColor
 import gg.skytils.skytilsws.client.WSClient
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -54,9 +57,15 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.*
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.fabric.impl.command.client.ClientCommandInternals
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket
 import net.minecraft.screen.PlayerScreenHandler
@@ -140,7 +149,6 @@ object Skytils : CoroutineScope, EventSubscriber {
         ignoreUnknownKeys = true
         serializersModule = SerializersModule {
             include(serializersModule)
-            contextual(CustomColor::class, CustomColor.Serializer)
             contextual(Regex::class, RegexAsString)
             contextual(UUID::class, UUIDAsString)
         }
@@ -261,21 +269,57 @@ object Skytils : CoroutineScope, EventSubscriber {
             ScoreCalculation,
             ServerPayloadInterceptor
         ).forEach(EventSubscriber::setup)
-    }
 
-    //FIXME
-    fun loadComplete() {
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, registryAccess ->
+            dispatcher.register(literal("catlas")
+                .then(
+                    literal("config").executes {
+                        displayScreen = CatlasConfig.gui()
+                        return@executes 0
+                    }
+                ).then(
+                    literal("cheaterpre").requires { deobfEnvironment }.executes {
+                        DungeonInfo.dungeonList.forEach {
+                            if (it.state > RoomState.PREVISITED) {
+                                it.state = RoomState.PREVISITED
+                                (it as? Room)?.uniqueRoom?.state = RoomState.PREVISITED
+                            }
+                        }
+                        return@executes 0
+                    }
+                ).then(
+                    literal("location").executes {
+                        displayScreen = ElementaEditingGui()
+                        return@executes 0
+                    }.then(
+                        literal("reset").executes {
+                            val element = CatlasElement
+                            element.setPos(0.5f, 0.5f)
+                            element.scale = 1f
+                            return@executes 0
+                        }
+                    )
+                ).then(
+                    literal("reload").then(
+                        literal("data").executes {
+                            DataFetcher.reloadData()
+                            DataFetcher.job?.invokeOnCompletion {
+                                it?.run {
+                                    UChat.chat("$failPrefix §cFailed to reload repository data due to a ${it::class.simpleName ?: "error"}: ${it.message}!")
+                                }.ifNull {
+                                    UChat.chat("$prefix §bRepository data has been §freloaded§b successfully.")
+                                }
+                            }
+                            return@executes 0
+                        }
+                    )
+                )
+            )
+        }
+
         MayorInfo.fetchMayorData()
 
         PersistentSave.loadData()
-
-        //FIXME
-        val cch = ClientCommandHandler.instance
-
-        if (cch !is AccessorCommandHandler) throw RuntimeException(
-            "Skytils was unable to mixin to the CommandHandler. Please report this on our Discord at discord.gg/skytils."
-        )
-        cch.method_0_5866(SkytilsCommand)
 
         if (UpdateChecker.currentVersion.specialVersionType != UpdateChecker.UpdateType.RELEASE && config.updateChannel == 2) {
             EssentialAPI.getNotifications().push("Skytils Update Checker", "You are on a development version of Skytils. Click here to change your update channel to pre-release.") {

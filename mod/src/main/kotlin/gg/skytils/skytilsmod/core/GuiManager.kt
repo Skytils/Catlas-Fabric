@@ -216,7 +216,7 @@ object GuiManager : PersistentSave(File(Skytils.modDir, "guipositions.json")), E
     }
 
     @Serializable
-    data class GuiElementMetadata(val x: Float, val y: Float, val scale: Float = 1f, val textShadow: SmartFontRenderer.TextShadow = SmartFontRenderer.TextShadow.NORMAL)
+    data class GuiElementMetadata(val x: Float, val y: Float, val scale: Float = 1f)
 
     override fun setup() {
         register(::onRenderHUD, EventPriority.Highest)

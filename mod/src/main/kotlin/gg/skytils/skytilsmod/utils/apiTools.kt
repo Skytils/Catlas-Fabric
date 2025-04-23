@@ -27,10 +27,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.IntArraySerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import net.minecraft.client.MinecraftClient
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtIo
+import net.minecraft.nbt.NbtSizeTracker
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.common.util.Constants
 import java.awt.Color
 import java.util.*
 import kotlin.io.encoding.Base64
@@ -176,9 +178,9 @@ fun Inventory.toMCItems() =
         if (data.isEmpty()) {
             emptyList()
         } else {
-            val list = NbtIo.readCompressed(Base64.decode(data).inputStream()).getList("i", Constants.NBT.TAG_COMPOUND)
-            (0 until list.size()).map { idx ->
-                list.getCompound(idx).takeUnless { it.isEmpty }?.let { ItemStack.fromNbt(it) }
+            val list = NbtIo.readCompressed(Base64.decode(data).inputStream(), NbtSizeTracker.ofUnlimitedBytes()).getList("i", NbtElement.COMPOUND_TYPE.toInt())
+            (0 until list.size).map { idx ->
+                list.getCompound(idx).takeUnless { it.isEmpty }?.let { ItemStack.fromNbt(MinecraftClient.getInstance().world?.registryManager, it) }
             }
         }
     }
