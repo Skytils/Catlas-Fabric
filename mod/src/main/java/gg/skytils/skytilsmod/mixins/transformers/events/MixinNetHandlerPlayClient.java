@@ -20,19 +20,26 @@ package gg.skytils.skytilsmod.mixins.transformers.events;
 
 import gg.skytils.event.EventsKt;
 import gg.skytils.skytilsmod._event.PacketSendEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientCommonNetworkHandler;
+import net.minecraft.client.network.ClientConnectionState;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.Packet;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
-public class MixinNetHandlerPlayClient {
-    @Inject(method = "sendPacket", at = @At("HEAD"), cancellable = true)
-    public void addToSendQueue(Packet<?> p_147297_1_, CallbackInfo ci) {
-        if (EventsKt.postCancellableSync(new PacketSendEvent(p_147297_1_))) {
-            ci.cancel();
+public abstract class MixinNetHandlerPlayClient extends ClientCommonNetworkHandler {
+    protected MixinNetHandlerPlayClient(MinecraftClient client, ClientConnection connection, ClientConnectionState connectionState) {
+        super(client, connection, connectionState);
+    }
+
+    // TODO: change injection site
+    @Override
+    public void sendPacket(Packet<?> packet) {
+        if (EventsKt.postCancellableSync(new PacketSendEvent(packet))) {
+            return;
         }
+        super.sendPacket(packet);
     }
 }

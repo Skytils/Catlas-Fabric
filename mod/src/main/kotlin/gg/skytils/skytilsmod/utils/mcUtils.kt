@@ -28,56 +28,20 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
 
-//#if FORGE
-//$$ import net.minecraft.launchwrapper.Launch
-//$$ import net.minecraftforge.client.ClientCommandHandler
-//$$ import net.minecraftforge.fml.common.Loader
-//#endif
-
-//#if FABRIC
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.Text
 
-//#endif
-
 val isDeobfuscatedEnvironment = State {
-    //#if FORGE
-    //#if MC<11400
-    //$$ Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", false) as Boolean
-    //#else
-    //$$ (System.getenv("target") ?: "").lowercase() == "fmluserdevclient"
-    //#endif
-    //#else
     FabricLoader.getInstance().isDevelopmentEnvironment
-    //#endif
 }
 
 fun isModLoaded(id: String) =
-    //#if FORGE
-    //#if MC<11400
-    //$$ Loader.isModLoaded(id)
-    //#else
-    //$$ FMLLoader.getLoadingModList().getModFileById(id)
-    //#endif
-    //#else
     FabricLoader.getInstance().isModLoaded(id)
-    //#endif
 
 fun runClientCommand(command: String) =
-    //#if MC<11400
-    //$$ ClientCommandHandler.instance.method_0_6233(UPlayer.getPlayer(), command)
-    //#else
     ClientCommandManager.getActiveDispatcher()?.execute(command.removePrefix("/"), UPlayer.getPlayer()?.networkHandler?.commandSource as? FabricClientCommandSource ?: error("No command source"))
-    //#endif
-
-fun isTimechangerLoaded() =
-    //#if FORGE
-    //$$ Loader.instance().activeModList.any { it.modId == "timechanger" && it.version == "1.0" }
-    //#else
-    false
-    //#endif
 
 operator fun ClientPlayerEntity.component1() = this.x
 operator fun ClientPlayerEntity.component2() = this.y

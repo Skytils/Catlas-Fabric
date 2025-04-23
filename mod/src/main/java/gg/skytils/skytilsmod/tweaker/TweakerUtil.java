@@ -36,7 +36,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-//#endif
 
 public class TweakerUtil {
     public static void exit() {

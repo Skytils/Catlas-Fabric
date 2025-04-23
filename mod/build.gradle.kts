@@ -27,6 +27,7 @@ plugins {
     id("gg.essential.defaults")
     id("gg.essential.multi-version")
     signing
+    `maven-publish`
 }
 
 group = "gg.skytils"
@@ -67,6 +68,11 @@ loom {
     mixin {
         defaultRefmapName = "mixins.skytils.refmap.json"
     }
+    mods {
+        create("skytils") {
+            sourceSet(sourceSets["main"])
+        }
+    }
 }
 
 val shadowMe: Configuration by configurations.creating {
@@ -78,8 +84,10 @@ val shadowMeMod: Configuration by configurations.creating {
 }
 
 dependencies {
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
+
     include(modRuntimeOnly("gg.essential:loader-fabric:1.2.3")!!)
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.99.4+1.20.6")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.2+1.21.4")
     modCompileOnly("gg.essential:essential-${if (platform.mcVersion >= 12100) "1.20.6-fabric" else platform.toString()}:17141+gd6f4cfd3a8") {
         exclude(module = "asm")
         exclude(module = "asm-commons")
@@ -87,33 +95,16 @@ dependencies {
         exclude(module = "gson")
         exclude(module = "kotlinx-coroutines-core-jvm")
     }
-    shadowMe("gg.essential:elementa-unstable-layoutdsl:676")
+    include(implementation("gg.essential:elementa-unstable-layoutdsl:676")!!)
 
-    shadowMe("dev.dediamondpro:minemark-elementa:1.2.3") {
-        excludeKotlin()
+    include(implementation("dev.dediamondpro:minemark-elementa:1.2.3"){
         exclude(module = "elementa-1.8.9-forge")
-    }
-
-    shadowMeMod("com.github.Skytils:AsmHelper:91ecc2bd9c") {
-        exclude(module = "kotlin-reflect")
-        exclude(module = "kotlin-stdlib-jdk8")
-        exclude(module = "kotlin-stdlib-jdk7")
-        exclude(module = "kotlin-stdlib")
-        exclude(module = "kotlinx-coroutines-core")
-    }
+    })
 
     shadowMe(platform(kotlin("bom")))
     shadowMe(platform(ktor("bom", "2.3.13", addSuffix = false)))
 
     shadowMe(ktor("serialization-kotlinx-json")) { excludeKotlin() }
-
-    shadowMe("org.jetbrains.kotlinx:kotlinx-serialization-json") {
-        version {
-            strictly("[1.5.1,)")
-            prefer("1.6.2")
-        }
-        excludeKotlin()
-    }
 
     shadowMe(ktorClient("core")) { excludeKotlin() }
     shadowMe(ktorClient("cio")) { excludeKotlin() }
@@ -131,30 +122,18 @@ dependencies {
     shadowMe(ktorServer("host-common")) { excludeKotlin() }
     shadowMe(ktorServer("auth")) { excludeKotlin() }
 
-    shadowMe("org.brotli:dec:0.1.2")
-    shadowMe("com.aayushatharva.brotli4j:brotli4j:1.18.0")
+    include(implementation("org.brotli:dec:0.1.2")!!)
 
-    shadowMe(project(":events:$platform")) { excludeKotlin() }
-    shadowMe(project(":vigilance")) { excludeKotlin() }
-    shadowMe("gg.skytils.hypixel.types:types") { excludeKotlin() }
-    shadowMe("gg.skytils.skytilsws.shared:ws-shared") { excludeKotlin() }
-
-    shadowMe("org.bouncycastle:bcpg-jdk18on:1.78.1") {
-        exclude(module = "bcprov-jdk18on")
-    }
-    compileOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    include(implementation(project(":events:$platform"))!!)
+    include(implementation(project(":vigilance"))!!)
+    include(implementation("gg.skytils.hypixel.types:types")!!)
+    include(implementation("gg.skytils.skytilsws.shared:ws-shared")!!)
 
     compileOnly("net.hypixel:mod-api:1.0.1")
 
-    shadowMe(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-rc.1")!!)
-    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
-    compileOnly("org.spongepowered:mixin:0.8.5")
-}
-
-sourceSets {
-    main {
-        output.setResourcesDir(kotlin.classesDirectory)
-    }
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-rc.1")!!)!!)
+    // annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
+    // compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 val enabledVersions = setOf(
@@ -215,8 +194,6 @@ tasks {
         relocate("dev.falsehonesty.asmhelper", "gg.skytils.asmhelper")
         relocate("com.llamalad7.mixinextras", "gg.skytils.mixinextras")
         relocate("io.ktor", "gg.skytils.ktor")
-        relocate("kotlinx.serialization", "gg.skytils.ktx-serialization")
-        relocate("kotlinx.coroutines", "gg.skytils.ktx-coroutines")
         relocate("gg.essential.vigilance", "gg.skytils.vigilance")
         relocate("net.hypixel.modapi.tweaker", "gg.skytils.hypixel-net.modapi.tweaker")
 
@@ -227,19 +204,8 @@ tasks {
             "**/LICENSE",
             "**/NOTICE",
             "**/NOTICE.txt",
-            "pack.mcmeta",
-            "dummyThing",
-            "**/module-info.class",
-            "META-INF/proguard/**",
-            "META-INF/maven/**",
-            "META-INF/versions/**",
-            "META-INF/com.android.tools/**"
+            "dummyThing"
         )
-        if (platform.isFabric) {
-            exclude("**/mcmod.info")
-        } else {
-            exclude("**/fabric.mod.json")
-        }
         mergeServiceFiles()
     }
     withType<AbstractArchiveTask> {
@@ -260,7 +226,8 @@ tasks {
                     "-Xbackend-threads=0",
                     /*"-Xuse-k2"*/
                 )
-            languageVersion = "1.9"
+            languageVersion = "2.0"
+            apiVersion = "2.0"
         }
         kotlinDaemonJvmArguments.set(
             listOf(
@@ -304,6 +271,6 @@ fun JavaVersion.asInt() = this.ordinal + 1
 
 fun <T : ModuleDependency> T.excludeKotlin(): T {
     exclude(group = "org.jetbrains.kotlin")
-    // exclude(module = "kotlinx-coroutines-core")
+    exclude(module = "kotlinx-coroutines-core")
     return this
 }

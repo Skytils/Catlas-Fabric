@@ -224,7 +224,7 @@ object Skytils : CoroutineScope, EventSubscriber {
 
     var trustClientTime = false
 
-    fun init() {
+    fun loadComplete() {
         DataFetcher.preload()
         guiManager = GuiManager
         //#if FORGE
@@ -303,10 +303,6 @@ object Skytils : CoroutineScope, EventSubscriber {
         PersistentSave.loadData()
 
         checkSystemTime()
-
-        if (!DependencyLoader.hasNativeBrotli) {
-            EssentialAPI.getNotifications().push("Skytils Warning", "Native Brotli is not available. Skytils will use the Java Brotli decoder, which cannot encode Brotli.", duration = 3f)
-        }
     }
 
     fun onTick(event: TickEvent) {

@@ -18,30 +18,21 @@
 
 package gg.skytils.skytilsmod.tweaker;
 
-import com.aayushatharva.brotli4j.Brotli4jLoader;
-//#if MC==10809 && FORGE
-//$$ import net.minecraftforge.fml.relauncher.CoreModManager;
-//#endif
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.Security;
 
 import static gg.skytils.skytilsmod.tweaker.TweakerUtil.addToClasspath;
 
 public class DependencyLoader {
 
     private static final String MAVEN_CENTRAL_ROOT = "https://repo1.maven.org/maven2/";
-    public static boolean hasNativeBrotli = false;
 
-    // TODO: not called on Fabric
     public static void loadDependencies() {
-        loadBrotli();
-        if (Security.getProvider("BC") == null) loadBCProv();
+
     }
 
     public static File loadDependency(String path, boolean isMod) throws Throwable {
@@ -67,69 +58,5 @@ public class DependencyLoader {
         //#endif
 
         return downloadLocation;
-    }
-
-    public static void loadBCProv() {
-        try {
-            loadDependency("org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar", false);
-            System.out.println("Bouncy Castle provider loaded");
-        } catch (Throwable t) {
-            System.out.println("Failed to load Bouncy Castle providers");
-            t.printStackTrace();
-        }
-    }
-
-    public static void loadBrotli() {
-        if (System.getProperty("skytils.noNativeBrotli") != null) {
-            System.out.println("Native Brotli disabled by system property");
-            hasNativeBrotli = false;
-            return;
-        }
-
-        try {
-            String brotli4jPlatform = getBrotli4jPlatform();
-            loadDependency(String.format("com/aayushatharva/brotli4j/native-%s/1.18.0/native-%s-1.18.0.jar", brotli4jPlatform, brotli4jPlatform), false);
-            Brotli4jLoader.ensureAvailability();
-            hasNativeBrotli = true;
-            System.out.println("Native Brotli loaded");
-        } catch (Throwable t) {
-            System.out.println("Failed to load native Brotli");
-            t.printStackTrace();
-            hasNativeBrotli = false;
-        }
-    }
-
-    public static String getBrotli4jPlatform() {
-        String osName = System.getProperty("os.name");
-        String archName = System.getProperty("os.arch");
-
-        if ("Linux".equalsIgnoreCase(osName)) {
-            if ("amd64".equalsIgnoreCase(archName)) {
-                return "linux-x86_64";
-            } else if ("aarch64".equalsIgnoreCase(archName)) {
-                return "linux-aarch64";
-            } else if ("arm".equalsIgnoreCase(archName)) {
-                return "linux-armv7";
-            } else if ("s390x".equalsIgnoreCase(archName)) {
-                return "linux-s390x";
-            } else if ("ppc64le".equalsIgnoreCase(archName)) {
-                return "linux-ppc64le";
-            } else if ("riscv64".equalsIgnoreCase(archName)) {
-                return "linux-riscv64";
-            }
-        } else if (osName.startsWith("Windows")) {
-            if ("amd64".equalsIgnoreCase(archName)) {
-                return "windows-x86_64";
-            } else if ("aarch64".equalsIgnoreCase(archName)) {
-                return "windows-aarch64";
-            }
-        } else if (osName.startsWith("Mac")) {
-            if ("x86_64".equalsIgnoreCase(archName)) {
-                return "osx-x86_64";
-            } else if ("aarch64".equalsIgnoreCase(archName)) {
-                return "osx-aarch64";
-            }
-        }
-        throw new UnsupportedOperationException("Unsupported OS and Architecture: " + osName + ", " + archName);
     }
 }

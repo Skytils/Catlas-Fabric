@@ -19,10 +19,12 @@
 package gg.skytils.skytilsmod
 
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 
-// TODO: call loadComplete
 object SkytilsMod : ClientModInitializer {
     override fun onInitializeClient() {
-        Skytils.init()
+        ClientLifecycleEvents.CLIENT_STARTED.register { client ->
+            Skytils.loadComplete()
+        }
     }
 }
