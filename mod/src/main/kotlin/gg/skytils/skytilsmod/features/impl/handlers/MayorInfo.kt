@@ -17,7 +17,6 @@
  */
 package gg.skytils.skytilsmod.features.impl.handlers
 
-import com.mojang.authlib.exceptions.AuthenticationException
 import gg.skytils.event.EventPriority
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.play.ChatMessageReceivedEvent
@@ -37,13 +36,11 @@ import gg.skytils.skytilsws.client.WSClient
 import gg.skytils.skytilsws.shared.packet.C2SPacketJerryVote
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.minecraft.screen.GenericContainerScreenHandler
-import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlin.time.Duration.Companion.hours
@@ -72,11 +69,6 @@ object MayorInfo : EventSubscriber {
                     ?.contains("alpha") == true
             ) return@tickTimer
             if (currentMayor == "Jerry" && System.currentTimeMillis() > newJerryPerks) {
-                if (jerryMayor != null && Skytils.config.displayJerryPerks) {
-                    SoundQueue.addToQueue("random.orb", 0.8f, 1f, 1, true)
-                    SoundQueue.addToQueue("random.orb", 0.8f, 1f, 2, true)
-                    SoundQueue.addToQueue("random.orb", 0.8f, 1f, 3, true)
-                }
                 jerryMayor = null
                 fetchJerryData()
             }
