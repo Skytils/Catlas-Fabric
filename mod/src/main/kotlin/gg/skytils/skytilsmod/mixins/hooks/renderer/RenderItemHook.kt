@@ -19,7 +19,6 @@ package gg.skytils.skytilsmod.mixins.hooks.renderer
 
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
-import gg.skytils.skytilsmod.features.impl.handlers.GlintCustomizer
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorRenderItem
 import gg.skytils.skytilsmod.utils.ItemUtil.getSkyBlockItemID
 import gg.skytils.skytilsmod.utils.NEUCompatibility.isCustomAHActive

@@ -17,7 +17,6 @@
  */
 package gg.skytils.skytilsmod.mixins.hooks.item
 
-import gg.skytils.skytilsmod.features.impl.handlers.ArmorColor
 import gg.skytils.skytilsmod.utils.ItemUtil.getExtraAttributes
 import gg.skytils.skytilsmod.utils.Utils
 import net.minecraft.item.ItemStack

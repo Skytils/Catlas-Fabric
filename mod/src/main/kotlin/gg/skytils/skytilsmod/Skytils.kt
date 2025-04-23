@@ -30,50 +30,20 @@ import gg.skytils.event.register
 import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import gg.skytils.skytilsmod._event.PacketSendEvent
 import gg.skytils.skytilsmod.commands.impl.*
-import gg.skytils.skytilsmod.commands.stats.impl.CataCommand
-import gg.skytils.skytilsmod.commands.stats.impl.SlayerCommand
 import gg.skytils.skytilsmod.core.*
-import gg.skytils.skytilsmod.features.impl.crimson.KuudraChestProfit
-import gg.skytils.skytilsmod.features.impl.crimson.KuudraFeatures
-import gg.skytils.skytilsmod.features.impl.crimson.TrophyFish
 import gg.skytils.skytilsmod.features.impl.dungeons.*
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.Catlas
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
-import gg.skytils.skytilsmod.features.impl.dungeons.solvers.*
-import gg.skytils.skytilsmod.features.impl.dungeons.solvers.terminals.*
-import gg.skytils.skytilsmod.features.impl.events.GriffinBurrows
-import gg.skytils.skytilsmod.features.impl.events.MayorDiana
-import gg.skytils.skytilsmod.features.impl.events.MayorJerry
-import gg.skytils.skytilsmod.features.impl.events.TechnoMayor
-import gg.skytils.skytilsmod.features.impl.farming.FarmingFeatures
-import gg.skytils.skytilsmod.features.impl.farming.GardenFeatures
-import gg.skytils.skytilsmod.features.impl.farming.TreasureHunterSolver
-import gg.skytils.skytilsmod.features.impl.farming.VisitorHelper
-import gg.skytils.skytilsmod.features.impl.funny.Funny
 import gg.skytils.skytilsmod.features.impl.handlers.*
-import gg.skytils.skytilsmod.features.impl.mining.CHWaypoints
-import gg.skytils.skytilsmod.features.impl.mining.MiningFeatures
-import gg.skytils.skytilsmod.features.impl.mining.CHTreasureChestHelper
 import gg.skytils.skytilsmod.features.impl.misc.*
-import gg.skytils.skytilsmod.features.impl.overlays.AuctionPriceOverlay
-import gg.skytils.skytilsmod.features.impl.protectitems.ProtectItems
-import gg.skytils.skytilsmod.features.impl.slayer.SlayerFeatures
-import gg.skytils.skytilsmod.features.impl.spidersden.RainTimer
-import gg.skytils.skytilsmod.features.impl.spidersden.RelicWaypoints
-import gg.skytils.skytilsmod.features.impl.spidersden.SpidersDenFeatures
-import gg.skytils.skytilsmod.features.impl.trackers.impl.MayorJerryTracker
-import gg.skytils.skytilsmod.features.impl.trackers.impl.MythologicalTracker
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
 import gg.skytils.skytilsmod.listeners.ChatListener
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
-import gg.skytils.skytilsmod.localapi.LocalAPI
 import gg.skytils.skytilsmod.mixins.extensions.ExtensionEntityLivingBase
 import gg.skytils.skytilsmod.mixins.hooks.entity.EntityPlayerSPHook
 import gg.skytils.skytilsmod.mixins.hooks.util.MouseHelperHook
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorCommandHandler
-import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorGuiStreamUnavailable
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorSettingsGui
 import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
@@ -310,7 +280,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         arrayOf(
             this,
-            Funny,
             ScoreCalculation,
         ).forEach(MinecraftForge.EVENT_BUS::register)
 
@@ -320,96 +289,18 @@ object Skytils : CoroutineScope, EventSubscriber {
             DungeonListener,
             MayorInfo,
             guiManager,
-            LocalAPI,
             SBInfo,
             SoundQueue,
             UpdateChecker,
 
-            AlignmentTaskSolver,
-            AntiFool,
-            ArmorColor,
             AuctionData,
-            AuctionPriceOverlay,
-            BlazeSolver,
-            BloodHelper,
-            BossHPDisplays,
-            BoulderSolver,
-            BrewingFeatures,
             Catlas,
-            ChangeAllToSameColorSolver,
-            ChatTabs,
-            CHTreasureChestHelper,
-            CHWaypoints,
-            ClickInOrderSolver,
-            CommandAliases,
-            ContainerSellValue,
-            CooldownTracker,
-            CreeperSolver,
-            CustomNotifications,
-            DungeonChestProfit,
             DungeonFeatures,
             DungeonTimer,
-            EnchantNames,
-            FarmingFeatures,
-            FavoritePets,
-            GardenFeatures,
-            GlintCustomizer,
-            GriffinBurrows,
-            IceFillSolver,
-            IcePathSolver,
-            ItemCycle,
             ItemFeatures,
-            KeyShortcuts,
-            KuudraChestProfit,
-            KuudraFeatures,
-            LividFinder,
-            LockOrb,
-            MasterMode7Features,
-            MayorDiana,
-            MayorJerry,
-            MayorJerryTracker,
-            MiningFeatures,
-            MinionFeatures,
             MiscFeatures,
-            MythologicalTracker,
-            NamespacedCommands,
-            QuiverStuff,
-            PartyAddons,
-            PartyFeatures,
-            PartyFinderStats,
-            PetFeatures,
-            Ping,
-            PotionEffectTimers,
-            PricePaid,
-            ProtectItems,
-            // QuadLinkLegacySolver,
-            QuiverStuff,
-            RainTimer,
-            RandomStuff,
-            RelicWaypoints,
-            ScamCheck,
             ScoreCalculation,
-            SelectAllColorSolver,
             ServerPayloadInterceptor,
-            ShootTheTargetSolver,
-            SimonSaysSolver,
-            SlayerFeatures,
-            SpamHider,
-            SpidersDenFeatures,
-            SpiritLeap,
-            StartsWithSequenceSolver,
-            TankDisplayStuff,
-            TechnoMayor,
-            TeleportMazeSolver,
-            TerminalFeatures,
-            ThreeWeirdosSolver,
-            TicTacToeSolver,
-            TreasureHunterSolver,
-            TriviaSolver,
-            TrophyFish,
-            VisitorHelper,
-            WaterBoardSolver,
-            Waypoints,
             EntityPlayerSPHook,
             MouseHelperHook
         ).forEach(EventSubscriber::setup)
@@ -437,42 +328,6 @@ object Skytils : CoroutineScope, EventSubscriber {
             "Skytils was unable to mixin to the CommandHandler. Please report this on our Discord at discord.gg/skytils."
         )
         cch.method_0_5866(SkytilsCommand)
-
-        cch.method_0_5866(CataCommand)
-        cch.method_0_5866(CalcXPCommand)
-        cch.method_0_5866(FragBotCommand)
-        cch.method_0_5866(HollowWaypointCommand)
-        cch.method_0_5866(ItemCycleCommand)
-        cch.method_0_5866(OrderedWaypointCommand)
-        cch.method_0_5866(ScamCheckCommand)
-        cch.method_0_5866(SlayerCommand)
-        cch.method_0_5866(TrophyFishCommand)
-
-        if (!cch.method_0_6231().containsKey("armorcolor")) {
-            cch.method_0_5866(ArmorColorCommand)
-        }
-
-        if (!cch.method_0_6231().containsKey("glintcustomize")) {
-            cch.method_0_5866(GlintCustomizeCommand)
-        }
-
-        if (!cch.method_0_6231().containsKey("protectitem")) {
-            cch.method_0_5866(ProtectItemCommand)
-        }
-
-        if (!cch.method_0_6231().containsKey("trackcooldown")) {
-            cch.method_0_5866(TrackCooldownCommand)
-        }
-
-        cch.commandSet.add(RepartyCommand)
-        cch.commandMap["skytilsreparty"] = RepartyCommand
-        if (config.overrideReparty || !cch.method_0_6231().containsKey("reparty")) {
-            cch.commandMap["reparty"] = RepartyCommand
-        }
-
-        if (config.overrideReparty || !cch.method_0_6231().containsKey("rp")) {
-            cch.commandMap["rp"] = RepartyCommand
-        }
 
         if (UpdateChecker.currentVersion.specialVersionType != UpdateChecker.UpdateType.RELEASE && config.updateChannel == 2) {
             if (ModChecker.canShowNotifications) {

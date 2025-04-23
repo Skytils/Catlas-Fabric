@@ -81,18 +81,6 @@
     "util.MixinIChatComponentSerializer",
     "util.MixinUtil",
     "world.MixinWorld"
-    //#if MC==10809
-    //$$ ,
-    //$$ "accessors.AccessorChatComponentText",
-    //$$ "accessors.AccessorCommandHandler",
-    //$$ "accessors.AccessorEntitySlime",
-    //$$ "accessors.AccessorEnumDyeColor",
-    //$$ "accessors.AccessorGuiEditSign",
-    //$$ "accessors.AccessorGuiStreamUnavailable",
-    //$$ "accessors.AccessorRenderItem",
-    //$$ "accessors.AccessorRenderManager",
-    //$$ "accessors.AccessorServerListEntryNormal"
-    //#endif
   ],
   "verbose": true,
   "client": [

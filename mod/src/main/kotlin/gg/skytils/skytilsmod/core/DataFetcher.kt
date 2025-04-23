@@ -35,7 +35,6 @@ import gg.skytils.skytilsmod.features.impl.handlers.SpamHider
 import gg.skytils.skytilsmod.features.impl.mining.MiningFeatures
 import gg.skytils.skytilsmod.features.impl.misc.ItemFeatures
 import gg.skytils.skytilsmod.features.impl.slayer.SlayerFeatures
-import gg.skytils.skytilsmod.features.impl.misc.SummonSkins
 import gg.skytils.skytilsmod.features.impl.spidersden.RelicWaypoints
 import gg.skytils.skytilsmod.utils.*
 import io.ktor.client.call.*

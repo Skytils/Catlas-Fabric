@@ -18,7 +18,6 @@
 package gg.skytils.skytilsmod.mixins.hooks.item
 
 import gg.skytils.skytilsmod.Skytils
-import gg.skytils.skytilsmod.features.impl.handlers.GlintCustomizer
 import gg.skytils.skytilsmod.utils.ItemUtil.getExtraAttributes
 import gg.skytils.skytilsmod.utils.ItemUtil.getSkyBlockItemID
 import gg.skytils.skytilsmod.utils.Utils
