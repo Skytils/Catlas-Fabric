@@ -30,16 +30,17 @@ import net.minecraft.client.render.RenderLayer
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.RotationAxis
 import java.awt.Color
+import kotlin.math.roundToInt
 
 object RenderUtils {
     private val mapIcons = Identifier.of("catlas:textures/marker.png")
 
     fun renderRectBorder(context: DrawContext, x: Double, y: Double, w: Double, h: Double, thickness: Double, color: Color) {
         if (color.alpha == 0) return
-        context.fill((x - thickness).toInt(), y.toInt(), thickness.toInt(), h.toInt(), color.rgb)
-        context.fill((x - thickness).toInt(), (y - thickness).toInt(), (w + thickness * 2).toInt(), thickness.toInt(), color.rgb)
-        context.fill((x + w).toInt(), y.toInt(), thickness.toInt(), h.toInt(), color.rgb)
-        context.fill((x - thickness).toInt(), (y + h).toInt(), (w + thickness * 2).toInt(), thickness.toInt(), color.rgb)
+        context.fill(x.roundToInt(), y.roundToInt(), (x + w).roundToInt(), (y + thickness).roundToInt(), color.rgb)
+        context.fill(x.roundToInt(), (y + h - thickness).roundToInt(), (x + w).roundToInt(), (y + h).roundToInt(), color.rgb)
+        context.fill(x.roundToInt(), (y + thickness).roundToInt(), (x + thickness).roundToInt(), (y + h - thickness).roundToInt(), color.rgb)
+        context.fill((x + w - thickness).roundToInt(), (y + thickness).roundToInt(), (x + w).roundToInt(), (y + h - thickness).roundToInt(), color.rgb)
     }
 
     fun renderCenteredText(context: DrawContext, text: List<String>, x: Int, y: Int, color: Int) {
