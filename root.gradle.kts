@@ -18,5 +18,6 @@
 
 plugins {
     kotlin("jvm") apply false
+    id("gg.essential.loom") version "1.9.+" apply false
     id("gg.essential.multi-version.root") apply false
 }

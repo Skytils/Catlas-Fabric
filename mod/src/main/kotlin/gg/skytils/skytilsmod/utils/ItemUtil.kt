@@ -20,7 +20,6 @@ package gg.skytils.skytilsmod.utils
 import net.minecraft.component.DataComponentTypes
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtElement
 
 object ItemUtil {
 
@@ -33,14 +32,7 @@ object ItemUtil {
      */
     @JvmStatic
     fun getSkyBlockItemID(item: ItemStack?): String? {
-        if (item == null) {
-            return null
-        }
-        val extraAttributes = getExtraAttributes(item) ?: return null
-
-        return if (extraAttributes.getType("id") != NbtElement.STRING_TYPE) {
-            null
-        } else extraAttributes.getString("id")
+        return getSkyBlockItemID(getExtraAttributes(item))
     }
 
     /**
@@ -53,6 +45,9 @@ object ItemUtil {
     @JvmStatic
     fun getExtraAttributes(item: ItemStack?): NbtCompound? {
         return item?.get(DataComponentTypes.CUSTOM_DATA)?.nbt?.getCompound("ExtraAttributes")
+        //#if MC>12104
+        //$$ ?.orElse(null)
+        //#endif
     }
 
     /**
@@ -64,13 +59,12 @@ object ItemUtil {
      */
     @JvmStatic
     fun getSkyBlockItemID(extraAttributes: NbtCompound?): String? {
-        if (extraAttributes != null) {
-            val itemId = extraAttributes.getString("id")
-            if (itemId.isNotEmpty()) {
-                return itemId
-            }
-        }
-        return null
+        return extraAttributes?.getString("id")
+            //#if MC<=12104
+            ?.takeUnless { it.isEmpty() }
+            //#else
+            //$$ ?.orElse(null)
+            //#endif
     }
 
     /**

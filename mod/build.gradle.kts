@@ -83,11 +83,34 @@ val shadowMeMod: Configuration by configurations.creating {
     configurations.modImplementation.get().extendsFrom(this)
 }
 
+configurations.modCompileOnly {
+    resolutionStrategy {
+        eachDependency {
+            if (requested.group == "gg.essential" && requested.name.startsWith("universalcraft-") && platform.mcVersion >= 12100) {
+                val correctArtifactName = "universalcraft-$platform"
+                val version = maxOf(requested.version!!.substringBefore("+").toInt(), 396)
+
+                if (requested.name != correctArtifactName) {
+                    useTarget("${requested.group}:${correctArtifactName}:${version}")
+                    because("Aligning universalcraft artifact with platform $correctArtifactName, version $version")
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
 
     include(modRuntimeOnly("gg.essential:loader-fabric:1.2.3")!!)
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.2+1.21.4")
+    modImplementation("net.fabricmc.fabric-api:fabric-api") {
+        version {
+            require(when {
+                platform.mcVersion == 12105 -> "0.121.0+1.21.5"
+                else -> "0.119.2+1.21.4"
+            })
+        }
+    }
     modCompileOnly("gg.essential:essential-${if (platform.mcVersion >= 12100) "1.20.6-fabric" else platform.toString()}:17141+gd6f4cfd3a8") {
         exclude(module = "asm")
         exclude(module = "asm-commons")

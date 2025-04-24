@@ -172,6 +172,7 @@ object UUIDAsString : KSerializer<UUID> {
     override fun serialize(encoder: Encoder, value: UUID) = encoder.encodeString(value.toString())
 }
 
+/*
 @OptIn(ExperimentalEncodingApi::class)
 fun Inventory.toMCItems() =
     data.let { data ->
@@ -184,6 +185,7 @@ fun Inventory.toMCItems() =
             }
         }
     }
+*/
 
 fun UUID.nonDashedString(): String {
     return this.toString().replace("-", "")

@@ -36,9 +36,9 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MapUpdater
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MimicDetector
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.CustomRenderLayers
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.HeightProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
-import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.RenderUtils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.listeners.DungeonListener.outboundRoomQueue
 import gg.skytils.skytilsmod.utils.Utils
@@ -137,7 +137,7 @@ object Catlas : EventSubscriber {
         matrices.peek().positionMatrix.mul(event.positionMatrix)
         matrices.push()
         matrices.translate(event.camera.pos.negate())
-        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderUtils.espLines)
+        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espLines)
         doors.forEach {
             VertexRendering.drawOutline(
                 matrices,
@@ -151,7 +151,7 @@ object Catlas : EventSubscriber {
         }
         event.entityVertexConsumers.drawCurrentLayer()
 
-        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderUtils.espFilledBoxLayer)
+        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espFilledBoxLayer)
         doors.forEach {
             matrices.push()
             matrices.translate(it.x.toDouble(), 0.0, it.z.toDouble())
