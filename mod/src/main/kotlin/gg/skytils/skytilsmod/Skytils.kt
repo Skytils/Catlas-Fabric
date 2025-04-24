@@ -20,6 +20,7 @@ package gg.skytils.skytilsmod
 
 import gg.essential.api.EssentialAPI
 import gg.essential.universal.UChat
+import gg.essential.universal.UDesktop
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.TickEvent
 import gg.skytils.event.impl.network.ClientDisconnectEvent
@@ -37,6 +38,8 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasElement
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
 import gg.skytils.skytilsmod.gui.OptionsGui
 import gg.skytils.skytilsmod.gui.ReopenableGUI
@@ -296,8 +299,27 @@ object Skytils : CoroutineScope, EventSubscriber {
                                 }
                             }
                             return@executes 0
-                        }
+                        }.then(
+                            literal("scan").executes {
+                                Catlas.reset()
+                                DungeonScanner.scan()
+                                return@executes 0
+                            }
+                        )
                     )
+                ).then(
+                    literal("roomdata").executes {
+                        val pos = ScanUtils.getRoomCenter(mc.player!!.x.toInt(), mc.player!!.z.toInt())
+                        val data = ScanUtils.getRoomData(pos.first, pos.second)
+                        if (data != null) {
+                            UDesktop.setClipboardString(data.toString())
+                            UChat.chat("$successPrefix §aCopied room data to clipboard.")
+                        } else {
+                            UDesktop.setClipboardString(ScanUtils.getCore(pos.first, pos.second).toString())
+                            UChat.chat("$successPrefix §aExisting room data not found. Copied room core to clipboard.")
+                        }
+                        return@executes 0
+                    }
                 )
             )
         }

@@ -125,6 +125,7 @@ object DungeonScanner {
 
     private fun scanRoom(world: World, x: Int, z: Int, row: Int, column: Int): Tile? {
         val height = HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE
+        println(height)
 
         if (height <= 0) return null
 
@@ -135,7 +136,11 @@ object DungeonScanner {
             // Scanning a room
             rowEven && columnEven -> {
                 val roomCore = ScanUtils.getCore(x, z)
-                Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
+                val roomData = ScanUtils.getRoomData(roomCore)
+                if (roomData == null) {
+                    println("${roomCore} doesn't map to room data")
+                }
+                Room(x, z, roomData ?: return null).apply {
                     core = roomCore
                     addToUnique(row, column)
                 }
