@@ -17,12 +17,12 @@
  */
 package gg.skytils.skytilsmod.utils
 
-import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.util.Formatting
 import org.apache.commons.lang3.StringUtils as ApacheStringUtils
 
 fun CharSequence?.countMatches(subString: CharSequence): Int = ApacheStringUtils.countMatches(this, subString)
 
-fun String?.stripControlCodes(): String = UTextComponent.stripFormatting(this ?: "")
+fun String.stripControlCodes(): String = Formatting.strip(this)!!
 
 fun CharSequence?.startsWithAny(vararg sequences: CharSequence?) = ApacheStringUtils.startsWithAny(this, *sequences)
 fun CharSequence.startsWithAny(sequences: Iterable<CharSequence>): Boolean = sequences.any { startsWith(it) }

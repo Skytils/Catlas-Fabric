@@ -19,8 +19,6 @@ package gg.skytils.skytilsmod.utils
 
 import gg.essential.lib.caffeine.cache.Cache
 import gg.essential.universal.ChatColor
-import gg.essential.universal.wrappers.message.UMessage
-import gg.essential.universal.wrappers.message.UTextComponent
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.gui.settings.CheckboxComponent
 import gg.skytils.hypixel.types.skyblock.Pet
@@ -29,11 +27,9 @@ import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.utils.NumberUtil.roundToPrecision
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.entity.Entity
 import net.minecraft.nbt.NbtList
 import net.minecraft.sound.SoundEvent
-import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
 import net.minecraft.util.*
 import net.minecraft.util.math.*
@@ -151,13 +147,6 @@ fun Box.isPosInside(pos: BlockPos): Boolean {
 
 fun Vigilant.openGUI(): Job = Skytils.launch {
     Skytils.displayScreen = this@openGUI.gui()
-}
-
-fun UMessage.append(item: Any) = this.addTextComponent(item)
-fun UTextComponent.setHoverText(text: String): UTextComponent {
-    hoverAction = HoverEvent.Action.SHOW_TEXT
-    hoverValue = text
-    return this
 }
 
 fun Text.map(action: Text.() -> Unit) {
