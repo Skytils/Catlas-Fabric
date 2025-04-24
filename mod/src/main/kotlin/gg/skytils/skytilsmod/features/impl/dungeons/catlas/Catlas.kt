@@ -125,29 +125,40 @@ object Catlas : EventSubscriber {
     fun onWorldRender(event: WorldDrawEvent) {
         if (!Utils.inDungeons || DungeonTimer.bossEntryTime != -1L || !CatlasConfig.boxWitherDoors) return
 
-        DungeonInfo.dungeonList.filter {
+        val doors = DungeonInfo.dungeonList.filter {
             it is Door && it.type != DoorType.NORMAL && it.state == RoomState.DISCOVERED && !it.opened
-        }.forEach {
-            val aabb = Box(it.x - 1.0, 69.0, it.z - 1.0, it.x + 2.0, 73.0, it.z + 2.0)
+        }
 
-            val color =
-                if (DungeonInfo.keys > 0) CatlasConfig.witherDoorKeyColor else CatlasConfig.witherDoorNoKeyColor
+        if (doors.isEmpty()) return
 
-            UGraphics.disableDepth()
-            val matrices = MatrixStack()
-            val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
+        val color = if (DungeonInfo.keys > 0) CatlasConfig.witherDoorKeyColor else CatlasConfig.witherDoorNoKeyColor
+        val aabb = Box(-1.0, 69.0, -1.0, 2.0, 73.0, 2.0)
+
+        val matrices = MatrixStack()
+        matrices.peek().positionMatrix.mul(event.positionMatrix)
+        matrices.push()
+        matrices.translate(event.camera.pos.negate())
+        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
+        UGraphics.disableDepth()
+        doors.forEach {
             VertexRendering.drawOutline(
                 matrices,
                 vertexConsumer,
                 VoxelShapes.cuboid(aabb),
-                -event.camera.pos.x,
-                -event.camera.pos.y,
-                -event.camera.pos.z,
+                it.x.toDouble(),
+                0.0,
+                it.z.toDouble(),
                 color.withAlpha(CatlasConfig.witherDoorOutline).rgb
             )
-            event.entityVertexConsumers.drawCurrentLayer()
+        }
+        event.entityVertexConsumers.drawCurrentLayer()
+        UGraphics.enableDepth()
 
-            val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getDebugFilledBox())
+        UGraphics.disableDepth()
+        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getDebugFilledBox())
+        doors.forEach {
+            matrices.push()
+            matrices.translate(it.x.toDouble(), 0.0, it.z.toDouble())
             VertexRendering.drawFilledBox(
                 matrices,
                 vertexConsumer1,
@@ -162,8 +173,11 @@ object Catlas : EventSubscriber {
                 color.green / 255f,
                 CatlasConfig.witherDoorFill
             )
-            UGraphics.enableDepth()
+            matrices.pop()
         }
+        event.entityVertexConsumers.drawCurrentLayer()
+        UGraphics.enableDepth()
+        matrices.pop()
     }
 
     fun onPuzzleReset(event: DungeonPuzzleResetEvent) {
