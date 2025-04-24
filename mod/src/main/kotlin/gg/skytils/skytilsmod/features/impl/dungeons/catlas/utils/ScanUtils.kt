@@ -84,10 +84,10 @@ object ScanUtils {
             val blockState = chunk.getBlockState(BlockPos(x, y, z))
             val id = if (blockState.isAir) 0 else {
                 val identifier = Registries.BLOCK.getId(blockState.block)
-                println(identifier)
-                legacyItems[identifier]?.first ?: continue
+                val mapped = legacyItems[identifier]?.first
+                println("Mapped ${identifier} to ${mapped}")
+                mapped
             }
-            if (id != 0) println("Mapped ${blockState} to ${id}")
             if (id == 0 && bedrock >= 2 && y < 69) {
                 sb.append(CharArray(y - 11) { '0' })
                 break
