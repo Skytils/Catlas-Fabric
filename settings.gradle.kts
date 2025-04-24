@@ -54,7 +54,7 @@ project(":events").apply {
 }
 listOf(
     "1.21.4-fabric",
-    //"1.21.5-fabric"
+    "1.21.5-fabric"
 ).forEach { version ->
     include(":events:$version")
     project(":events:$version").apply {
@@ -70,7 +70,7 @@ project(":mod").apply {
 }
 listOf(
     "1.21.4-fabric",
-    //1.21.5-fabric"
+    "1.21.5-fabric"
 ).forEach { version ->
     include(":mod:$version")
     project(":mod:$version").apply {
