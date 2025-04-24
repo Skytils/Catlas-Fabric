@@ -24,11 +24,13 @@ import gg.skytils.event.impl.render.WorldDrawEvent
 import gg.skytils.event.impl.world.BlockStateUpdateEvent
 import gg.skytils.event.impl.world.ChunkLoadEvent
 import gg.skytils.event.register
+import gg.skytils.skytilsmod._event.MainThreadPacketReceiveEvent
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexRendering
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.ChunkSectionPos
@@ -44,6 +46,20 @@ object HeightProvider : EventSubscriber {
         register(::onBlockChange)
         register(::onChunkLoad)
         register(::onWorldDraw)
+        register(::onReceivePacket)
+    }
+
+    fun onReceivePacket(event: MainThreadPacketReceiveEvent<*>) {
+        if (event.packet is UnloadChunkS2CPacket) {
+            val mut = BlockPos.Mutable()
+            for (x in event.packet.pos.startX..event.packet.pos.endX) {
+                mut.x = x
+                for (z in event.packet.pos.startZ..event.packet.pos.endZ) {
+                    mut.z = z
+                    heightMap.remove(mut.mapKey())
+                }
+            }
+        }
     }
 
     fun onWorldDraw(event: WorldDrawEvent) {
