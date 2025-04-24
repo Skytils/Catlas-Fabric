@@ -26,11 +26,13 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
 import gg.skytils.skytilsmod.utils.Utils
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromStream
-import net.minecraft.block.Block
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.Heightmap
 import kotlin.math.roundToInt
 
 object ScanUtils {
@@ -39,6 +41,18 @@ object ScanUtils {
         mc.resourceManager.getResourceOrThrow(
             Identifier.of("catlas:rooms.json")
         ).inputStream.use(json::decodeFromStream)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    val legacyItems: Map<Identifier, Pair<Int, Int>> by lazy {
+        val legacyObj: JsonObject = mc.resourceManager.getResourceOrThrow(
+            Identifier.of("catlas:legacy.json")
+        ).inputStream.use(json::decodeFromStream)
+
+        val blocksObj = legacyObj["blocks"]!!.jsonObject
+        return@lazy blocksObj.entries.associate {
+            Identifier.of(it.value.jsonPrimitive.content.substringBefore("[")) to it.key.split(":", limit = 2).let { it.first().toInt() to it.last().toInt() }
+        }
     }
 
     fun getRoomData(x: Int, z: Int): RoomData? {
@@ -65,16 +79,15 @@ object ScanUtils {
     fun getCore(x: Int, z: Int): Int {
         val sb = StringBuilder(150)
         val chunk = mc.world!!.getChunk(x shr 4, z shr 4)
-        val height = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE).get(x and 15, z and 15).coerceIn(11..140)
-        sb.append(CharArray(140 - height) { '0' })
         var bedrock = 0
-        for (y in height downTo 12) {
-            //#if MC==10809
-            //$$ val id = Block.method_0_670(chunk.getBlock(BlockPos(x, y, z)))
-            //#else
-            // TODO: Check if this is the same value post-flattening (it likely isn't)
-            val id = Block.getRawIdFromState(chunk.getBlockState(BlockPos(x, y, z)))
-            //#endif
+        for (y in 140 downTo 12) {
+            val blockState = chunk.getBlockState(BlockPos(x, y, z))
+            val id = if (blockState.isAir) 0 else {
+                val identifier = Registries.BLOCK.getId(blockState.block)
+                println(identifier)
+                legacyItems[identifier]?.first ?: continue
+            }
+            if (id != 0) println("Mapped ${blockState} to ${id}")
             if (id == 0 && bedrock >= 2 && y < 69) {
                 sb.append(CharArray(y - 11) { '0' })
                 break

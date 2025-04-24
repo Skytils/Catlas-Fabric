@@ -31,6 +31,7 @@ import gg.skytils.skytilsmod.utils.printDevMessage
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonRoom
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkSectionPos
 import net.minecraft.world.Heightmap
 import net.minecraft.world.World
 import net.minecraft.world.chunk.ChunkStatus
@@ -85,7 +86,7 @@ object DungeonScanner {
                 //#if MC==10809
                 //$$ if (!world.method_0_271(xPos shr 4, zPos shr 4).method_12229()) {
                 //#else
-                if (world.chunkManager.getChunk(xPos shr 4, zPos shr 4, ChunkStatus.FULL, false) != null) {
+                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos))) {
                 //#endif
                     // The room being scanned has not been loaded in.
                     allChunksLoaded = false
@@ -124,19 +125,6 @@ object DungeonScanner {
     }
 
     private fun scanRoom(world: World, x: Int, z: Int, row: Int, column: Int): Tile? {
-        //#if MC==10809
-        //$$ val chunk = mc.world!!.method_0_271(x shr 4, z shr 4)
-        //#else
-        val chunk = mc.world!!.getChunk(x shr 4, z shr 4)
-        //#endif
-        val height =
-            //#if MC==10809
-            //$$ chunk.method_0_1367(x and 15, z and 15)
-            //#else
-            chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE).get(x and 15, z and 15)
-            //#endif
-        if (height == 0) return null
-
         val rowEven = row and 1 == 0
         val columnEven = column and 1 == 0
 
@@ -164,7 +152,7 @@ object DungeonScanner {
 
             // Doorway between rooms
             // Old trap has a single block at 82
-            height == 74 || height == 82 -> {
+            !world.getBlockState(BlockPos(x, 73, z)).isAir || !world.getBlockState(BlockPos(x, 81, z)).isAir -> {
                 Door(
                     x, z,
                     // Finds door type from door block

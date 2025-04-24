@@ -269,6 +269,11 @@ object Skytils : CoroutineScope, EventSubscriber {
                         return@executes 0
                     }
                 ).then(
+                    literal("cheater").requires { deobfEnvironment }.executes {
+                        UChat.chat(DungeonInfo.uniqueRooms.entries.sortedByDescending { it.value.mainRoom.data.type }.map { it.key })
+                        return@executes 0
+                    }
+                ).then(
                     literal("location").executes {
                         displayScreen = ElementaEditingGui()
                         return@executes 0
