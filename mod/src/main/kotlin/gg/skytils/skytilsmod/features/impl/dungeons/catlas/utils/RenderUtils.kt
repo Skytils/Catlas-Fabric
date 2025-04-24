@@ -23,17 +23,56 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasElement
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.DungeonMapPlayer
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
-import gg.skytils.skytilsmod.utils.*
+import gg.skytils.skytilsmod.utils.DungeonClass
+import gg.skytils.skytilsmod.utils.ItemUtil
+import gg.skytils.skytilsmod.utils.Utils
+import gg.skytils.skytilsmod.utils.ifNull
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.PlayerSkinDrawer
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.RenderPhase
+import net.minecraft.client.render.VertexFormat
+import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.RotationAxis
 import java.awt.Color
+import java.util.*
 import kotlin.math.roundToInt
 
 object RenderUtils {
     private val mapIcons = Identifier.of("catlas:textures/marker.png")
+
+    val espLines = RenderLayer.of(
+        "catlas:lines",
+        VertexFormats.LINES,
+        VertexFormat.DrawMode.LINES,
+        1536,
+        RenderLayer.MultiPhaseParameters.builder()
+            .program(RenderPhase.LINES_PROGRAM)
+            .lineWidth(RenderPhase.LineWidth(OptionalDouble.empty()))
+            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+            .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+            .target(RenderPhase.ITEM_ENTITY_TARGET)
+            .writeMaskState(RenderPhase.ALL_MASK)
+            .cull(RenderPhase.DISABLE_CULLING)
+            .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
+            .build(false)
+    )
+
+    val espFilledBoxLayer = RenderLayer.of(
+        "catlas:debug_filled_box",
+        VertexFormats.POSITION_COLOR,
+        VertexFormat.DrawMode.TRIANGLE_STRIP,
+        1536,
+        false,
+        true,
+        RenderLayer.MultiPhaseParameters.builder()
+            .program(RenderPhase.POSITION_COLOR_PROGRAM)
+            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+            .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+            .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
+            .build(false)
+    )
 
     fun renderRectBorder(context: DrawContext, x: Double, y: Double, w: Double, h: Double, thickness: Double, color: Color) {
         if (color.alpha == 0) return

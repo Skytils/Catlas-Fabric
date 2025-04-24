@@ -19,7 +19,6 @@
 package gg.skytils.skytilsmod.features.impl.dungeons.catlas
 
 import gg.essential.elementa.utils.withAlpha
-import gg.essential.universal.UGraphics
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.TickEvent
 import gg.skytils.event.impl.play.WorldUnloadEvent
@@ -39,13 +38,13 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MapUpdater
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.MimicDetector
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.HeightProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.RenderUtils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.listeners.DungeonListener.outboundRoomQueue
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.printDevMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
-import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexRendering
 import net.minecraft.client.util.math.MatrixStack
@@ -138,8 +137,7 @@ object Catlas : EventSubscriber {
         matrices.peek().positionMatrix.mul(event.positionMatrix)
         matrices.push()
         matrices.translate(event.camera.pos.negate())
-        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
-        UGraphics.disableDepth()
+        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderUtils.espLines)
         doors.forEach {
             VertexRendering.drawOutline(
                 matrices,
@@ -152,10 +150,8 @@ object Catlas : EventSubscriber {
             )
         }
         event.entityVertexConsumers.drawCurrentLayer()
-        UGraphics.enableDepth()
 
-        UGraphics.disableDepth()
-        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getDebugFilledBox())
+        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderUtils.espFilledBoxLayer)
         doors.forEach {
             matrices.push()
             matrices.translate(it.x.toDouble(), 0.0, it.z.toDouble())
@@ -176,7 +172,6 @@ object Catlas : EventSubscriber {
             matrices.pop()
         }
         event.entityVertexConsumers.drawCurrentLayer()
-        UGraphics.enableDepth()
         matrices.pop()
     }
 
