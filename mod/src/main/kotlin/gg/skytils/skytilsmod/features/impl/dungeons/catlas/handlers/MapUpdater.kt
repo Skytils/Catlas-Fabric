@@ -29,9 +29,8 @@ import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorMapState
 import gg.skytils.skytilsmod.utils.Utils
 import net.minecraft.block.Blocks
 import net.minecraft.item.map.MapDecorationTypes
-import net.minecraft.util.math.BlockPos
 import net.minecraft.item.map.MapState
-import net.minecraft.world.chunk.ChunkStatus
+import net.minecraft.util.math.BlockPos
 import kotlin.math.roundToInt
 
 object MapUpdater {
@@ -97,9 +96,9 @@ object MapUpdater {
                     if (mapTile is Door && mapTile.type == DoorType.WITHER) {
                         room.opened = false
                     } else if (!room.opened) {
-                        val chunk = mc.world!!.getChunk(room.x shr 4, room.z shr 4)
 
-                        if (mc.world!!.chunkManager.getChunk(room.x shr 4, room.z shr 4, ChunkStatus.FULL, false) != null) {
+                        if (mc.world!!.isChunkLoaded(room.x shr 4, room.z shr 4)) {
+                            val chunk = mc.world!!.getChunk(room.x shr 4, room.z shr 4)
                             if (chunk.getBlockState(BlockPos(room.x, 69, room.z)).block == Blocks.AIR)
                             room.opened = true
                         } else if (mapTile is Door && mapTile.state == RoomState.DISCOVERED) {

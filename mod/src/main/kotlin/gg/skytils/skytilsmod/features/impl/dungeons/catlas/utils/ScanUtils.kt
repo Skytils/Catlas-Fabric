@@ -79,8 +79,11 @@ object ScanUtils {
     fun getCore(x: Int, z: Int): Int {
         val sb = StringBuilder(150)
         val chunk = mc.world!!.getChunk(x shr 4, z shr 4)
+        val height = HeightProvider.getHeight(x, z)?.coerceIn(11..140) ?: 140
+        sb.append(CharArray(140 - height) { '0' })
+
         var bedrock = 0
-        for (y in 140 downTo 12) {
+        for (y in height downTo 12) {
             val blockState = chunk.getBlockState(BlockPos(x, y, z))
             val id = if (blockState.isAir) 0 else {
                 val identifier = Registries.BLOCK.getId(blockState.block)

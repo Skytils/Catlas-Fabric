@@ -87,7 +87,6 @@ object Skytils : CoroutineScope, EventSubscriber {
     @JvmField
     val VERSION = Reference.VERSION
 
-    @JvmStatic
     val mc: MinecraftClient by lazy {
         MinecraftClient.getInstance()
     }

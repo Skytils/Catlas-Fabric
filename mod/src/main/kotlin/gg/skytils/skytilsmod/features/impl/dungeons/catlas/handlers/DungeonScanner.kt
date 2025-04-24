@@ -24,6 +24,7 @@ import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.features.impl.dungeons.DungeonFeatures.dungeonFloorNumber
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.*
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner.scan
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.HeightProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.utils.SBInfo
@@ -32,9 +33,7 @@ import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonRoom
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkSectionPos
-import net.minecraft.world.Heightmap
 import net.minecraft.world.World
-import net.minecraft.world.chunk.ChunkStatus
 
 /**
  * Handles everything related to scanning the dungeon. Running [scan] will update the instance of [DungeonInfo].
@@ -86,7 +85,7 @@ object DungeonScanner {
                 //#if MC==10809
                 //$$ if (!world.method_0_271(xPos shr 4, zPos shr 4).method_12229()) {
                 //#else
-                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos))) {
+                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos)) || (HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE) <= 0) {
                 //#endif
                     // The room being scanned has not been loaded in.
                     allChunksLoaded = false
@@ -125,6 +124,10 @@ object DungeonScanner {
     }
 
     private fun scanRoom(world: World, x: Int, z: Int, row: Int, column: Int): Tile? {
+        val height = HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE
+
+        if (height <= 0) return null
+
         val rowEven = row and 1 == 0
         val columnEven = column and 1 == 0
 
@@ -152,7 +155,7 @@ object DungeonScanner {
 
             // Doorway between rooms
             // Old trap has a single block at 82
-            !world.getBlockState(BlockPos(x, 73, z)).isAir || !world.getBlockState(BlockPos(x, 81, z)).isAir -> {
+            height == 74 || height == 82 -> {
                 Door(
                     x, z,
                     // Finds door type from door block

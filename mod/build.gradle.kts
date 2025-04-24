@@ -125,9 +125,9 @@ dependencies {
     include(implementation("org.brotli:dec:0.1.2")!!)
 
     include(modImplementation(project(":events:$platform"))!!)
-    include(implementation(project(":vigilance"))!!)
-    include(implementation("gg.skytils.hypixel.types:types")!!)
-    include(implementation("gg.skytils.skytilsws.shared:ws-shared")!!)
+    shadowMe(project(":vigilance"))
+    shadowMe("gg.skytils.hypixel.types:types")
+    shadowMe("gg.skytils.skytilsws.shared:ws-shared")
 
     compileOnly("net.hypixel:mod-api:1.0.1")
 
