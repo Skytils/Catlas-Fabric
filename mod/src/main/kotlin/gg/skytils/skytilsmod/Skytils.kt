@@ -299,13 +299,13 @@ object Skytils : CoroutineScope, EventSubscriber {
                                 }
                             }
                             return@executes 0
-                        }.then(
-                            literal("scan").executes {
-                                Catlas.reset()
-                                DungeonScanner.scan()
-                                return@executes 0
-                            }
-                        )
+                        }
+                    ).then(
+                        literal("scan").executes {
+                            Catlas.reset()
+                            DungeonScanner.scan()
+                            return@executes 0
+                        }
                     )
                 ).then(
                     literal("roomdata").executes {
