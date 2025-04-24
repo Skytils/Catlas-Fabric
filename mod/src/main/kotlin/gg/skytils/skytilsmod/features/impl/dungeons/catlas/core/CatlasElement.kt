@@ -54,7 +54,7 @@ object CatlasElement : GuiElement(name = "Dungeon Map", x = 0, y = 0) {
     var dynamicRotation = 0f
 
     private fun setupRotate(context: DrawContext) {
-        context.enableScissor(scaleX.toInt(), scaleY.toInt(), (scaleX + scaleWidth).toInt(), (scaleY + scaleHeight).toInt())
+        context.enableScissor(0, 0, 128, 128)
         context.matrices.translate(64.0, 64.0, 0.0)
         context.matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-mc.player!!.yaw + 180f))
 
