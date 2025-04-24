@@ -76,7 +76,7 @@ object HeightProvider : EventSubscriber {
     fun onBlockChange(event: BlockStateUpdateEvent) {
         if (event.update.isAir) return
         heightMap.compute(event.pos.mapKey()) { _, v ->
-            if (v != null) max(v, event.pos.y + 1) else (event.pos.y + 1)
+            if (v != null) max(v, event.pos.y) else event.pos.y
         }
     }
 
@@ -89,15 +89,20 @@ object HeightProvider : EventSubscriber {
                 }
             }
         } else {
-            val chunkSection = event.chunk.getSection(highestSection)
-            for (x in 0..15) {
-                for (z in 0..15) {
-                    val i = ChunkSectionPos.getBlockCoord(event.chunk.sectionIndexToCoord(highestSection) + 1)
+            val mut = BlockPos.Mutable()
+            val highestY = ChunkSectionPos.getBlockCoord(event.chunk.sectionIndexToCoord(highestSection) + 1) + 15
+            val lowestY = event.chunk.bottomY
 
-                    for (y in 15 downTo 0) {
-                        val state = chunkSection.getBlockState(x, y, z)
+            for (x in event.chunk.pos.startX..event.chunk.pos.endX) {
+                mut.x = x
+                for (z in event.chunk.pos.startZ..event.chunk.pos.endZ) {
+                    mut.z = z
+                    for (y in highestY downTo lowestY) {
+                        mut.y = y
+                        val state = event.chunk.getBlockState(mut)
                         if (!state.isAir) {
-                            heightMap[event.chunk.pos.getBlockPos(x, 0, z).mapKey()] = i + y - 15
+                            mut.y = 0
+                            heightMap[mut.mapKey()] = y
                             break
                         }
                     }

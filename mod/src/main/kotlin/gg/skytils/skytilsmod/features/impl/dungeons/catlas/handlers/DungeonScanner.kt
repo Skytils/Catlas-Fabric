@@ -85,7 +85,7 @@ object DungeonScanner {
                 //#if MC==10809
                 //$$ if (!world.method_0_271(xPos shr 4, zPos shr 4).method_12229()) {
                 //#else
-                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos)) || (HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE) <= 0) {
+                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos))/*|| (HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE) <= 0*/) {
                 //#endif
                     // The room being scanned has not been loaded in.
                     allChunksLoaded = false
@@ -155,7 +155,7 @@ object DungeonScanner {
 
             // Doorway between rooms
             // Old trap has a single block at 82
-            height == 74 || height == 82 -> {
+            height + 1 == 74 || height + 1 == 82 -> {
                 Door(
                     x, z,
                     // Finds door type from door block

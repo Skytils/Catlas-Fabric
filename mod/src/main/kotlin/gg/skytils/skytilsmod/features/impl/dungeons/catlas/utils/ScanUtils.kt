@@ -79,7 +79,7 @@ object ScanUtils {
     fun getCore(x: Int, z: Int): Int {
         val sb = StringBuilder(150)
         val chunk = mc.world!!.getChunk(x shr 4, z shr 4)
-        val height = HeightProvider.getHeight(x, z)?.coerceIn(11..140) ?: 140
+        val height = HeightProvider.getHeight(x, z)?.plus(1)?.coerceIn(11..140) ?: 140
         sb.append(CharArray(140 - height) { '0' })
 
         var bedrock = 0
