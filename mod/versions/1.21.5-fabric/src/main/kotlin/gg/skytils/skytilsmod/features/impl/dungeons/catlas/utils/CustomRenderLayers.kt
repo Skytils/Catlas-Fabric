@@ -27,12 +27,13 @@ import net.minecraft.client.gl.RenderPipelines.RENDERTYPE_LINES_SNIPPET
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.RenderPhase
 import net.minecraft.client.render.VertexFormats
+import net.minecraft.util.Identifier
 import java.util.*
 
 object CustomRenderLayers {
     val espLinesPipeline = RenderPipelines.register(RenderPipeline.builder(RENDERTYPE_LINES_SNIPPET)
         .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-        .withLocation("pipeline/catlas:lines")
+        .withLocation(Identifier.of("catlas", "pipeline/lines"))
         .build()
     )
 
@@ -49,7 +50,7 @@ object CustomRenderLayers {
 
     val espBoxPipeline = RenderPipelines.register(
         RenderPipeline.builder(POSITION_COLOR_SNIPPET)
-            .withLocation("pipeline/debug_filled_box")
+            .withLocation(Identifier.of("catlas", "pipeline/debug_filled_box"))
             .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLE_STRIP)
             .build()
     )

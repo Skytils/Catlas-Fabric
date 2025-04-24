@@ -9,8 +9,7 @@
     "accessors.AccessorHypixelPacketRegistry",
     "accessors.AccessorMapState",
     "accessors.AccessorSettingsGui",
-    "audio.MixinSoundManager",
-    "util.MixinIChatComponentSerializer"
+    "audio.MixinSoundManager"
   ],
   "verbose": true,
   "client": [
