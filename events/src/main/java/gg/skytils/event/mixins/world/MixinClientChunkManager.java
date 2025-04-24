@@ -26,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,11 +34,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Consumer;
+import java.util.Map;
 
 @Mixin(ClientChunkManager.class)
 public abstract class MixinClientChunkManager extends ChunkManager {
     @Inject(method = "loadChunkFromPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;resetChunkColor(Lnet/minecraft/util/math/ChunkPos;)V"))
-    private void onLoadChunkFromPacket(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer, CallbackInfoReturnable<WorldChunk> cir, @Local WorldChunk worldChunk) {
+    private void onLoadChunkFromPacket(int x, int z, PacketByteBuf buf,
+                                       //#if MC<=12104
+                                       NbtCompound nbt,
+                                       //#else
+                                       //$$ Map<Heightmap.Type, long[]> heightmaps,
+                                       //#endif
+                                       Consumer<ChunkData.BlockEntityVisitor> consumer, CallbackInfoReturnable<WorldChunk> cir, @Local WorldChunk worldChunk) {
         EventsKt.postSync(new ChunkLoadEvent(worldChunk));
     }
 }
