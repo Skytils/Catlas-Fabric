@@ -32,7 +32,6 @@ import gg.skytils.skytilsmod.utils.printDevMessage
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonRoom
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkSectionPos
 import net.minecraft.world.World
 
 /**
@@ -82,13 +81,9 @@ object DungeonScanner {
                 val xPos = startX + x * (roomSize shr 1)
                 val zPos = startZ + z * (roomSize shr 1)
 
-                //#if MC==10809
-                //$$ if (!world.method_0_271(xPos shr 4, zPos shr 4).method_12229()) {
-                //#else
-                if (HeightProvider.getHeight(x, z) == null) {
-                //#endif
+                val chunk = world.getChunk(xPos shr 4, zPos shr 4)
+                if (!world.chunkManager.isChunkLoaded(xPos shr 4, zPos shr 4) || HeightProvider.getHeight(x, z) == null) {
                     // The room being scanned has not been loaded in.
-                    println("chunk not loaded")
                     allChunksLoaded = false
                     continue
                 }

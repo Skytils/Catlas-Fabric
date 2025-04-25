@@ -97,10 +97,10 @@ object MapUpdater {
                         room.opened = false
                     } else if (!room.opened) {
 
-                        if (mc.world!!.isChunkLoaded(room.x shr 4, room.z shr 4)) {
+                        if (mc.world!!.chunkManager.isChunkLoaded(room.x shr 4, room.z shr 4)) {
                             val chunk = mc.world!!.getChunk(room.x shr 4, room.z shr 4)
-                            if (chunk.getBlockState(BlockPos(room.x, 69, room.z)).block == Blocks.AIR)
-                            room.opened = true
+                            if (chunk.getBlockState(BlockPos(room.x, 69, room.z)).isAir)
+                                room.opened = true
                         } else if (mapTile is Door && mapTile.state == RoomState.DISCOVERED) {
                             if (room.type == DoorType.BLOOD) {
                                 val bloodRoom = DungeonInfo.uniqueRooms["Blood"]
