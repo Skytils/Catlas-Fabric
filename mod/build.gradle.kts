@@ -147,6 +147,12 @@ dependencies {
     // compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
+sourceSets {
+    main {
+        output.setResourcesDir(kotlin.classesDirectory)
+    }
+}
+
 val enabledVersions = setOf(
     "1.21.4-fabric",
     "1.21.5-fabric",

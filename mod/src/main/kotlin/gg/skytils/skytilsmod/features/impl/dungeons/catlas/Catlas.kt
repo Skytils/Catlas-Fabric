@@ -147,7 +147,7 @@ object Catlas : EventSubscriber {
                 color.withAlpha(CatlasConfig.witherDoorOutline).rgb
             )
         }
-        // event.entityVertexConsumers.drawCurrentLayer()
+        event.entityVertexConsumers.draw(CustomRenderLayers.espLines)
 
         val triangleStripBuffer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espFilledBoxLayer)
         doors.forEach {
@@ -166,8 +166,8 @@ object Catlas : EventSubscriber {
                 CatlasConfig.witherDoorFill
             )
         }
+        event.entityVertexConsumers.draw(CustomRenderLayers.espFilledBoxLayer)
         event.matrices.pop()
-        // event.entityVertexConsumers.drawCurrentLayer()
     }
 
     fun onPuzzleReset(event: DungeonPuzzleResetEvent) {

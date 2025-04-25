@@ -83,6 +83,7 @@ object HeightProvider : EventSubscriber {
                     Color.RED.rgb
                 )
             }
+            event.entityVertexConsumers.draw(RenderLayer.getLines())
             event.matrices.pop()
         }
     }
