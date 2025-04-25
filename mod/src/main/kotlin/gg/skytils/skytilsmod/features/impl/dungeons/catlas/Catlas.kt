@@ -40,6 +40,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.CustomRenderLay
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.HeightProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
+import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.DungeonListener.outboundRoomQueue
 import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.printDevMessage
@@ -113,7 +114,7 @@ object Catlas : EventSubscriber {
                     it.state = RoomState.PREVISITED
                 }
             }
-            // DungeonListener.team[player.name]?.mapPlayer?.yaw = player.yaw
+            MapUpdater.updatePlayersUsingEntity()
         }
     }
 

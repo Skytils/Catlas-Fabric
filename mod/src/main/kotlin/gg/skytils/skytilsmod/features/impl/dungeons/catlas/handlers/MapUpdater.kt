@@ -27,7 +27,6 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.MapUtils.yaw
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorMapState
 import gg.skytils.skytilsmod.utils.Utils
-import net.minecraft.block.Blocks
 import net.minecraft.item.map.MapDecorationTypes
 import net.minecraft.item.map.MapState
 import net.minecraft.util.math.BlockPos
@@ -52,6 +51,18 @@ object MapUpdater {
                     ((mc.player!!.x - DungeonScanner.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first).roundToInt()
                 player.mapZ =
                     ((mc.player!!.z - DungeonScanner.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second).roundToInt()
+            }
+        }
+    }
+
+    fun updatePlayersUsingEntity() {
+        DungeonListener.team.forEach { (name, team) ->
+            team.player?.let {
+                team.mapPlayer.yaw = it.yaw
+                team.mapPlayer.mapX =
+                    ((it.x - DungeonScanner.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first).roundToInt()
+                team.mapPlayer.mapZ =
+                    ((it.z - DungeonScanner.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second).roundToInt()
             }
         }
     }
