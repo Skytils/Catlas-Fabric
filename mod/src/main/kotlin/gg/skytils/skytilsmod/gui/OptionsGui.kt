@@ -42,8 +42,6 @@ class OptionsGui(val parent: Screen? = null) :
             textScale = RelativeWindowConstraint(0.025f)
         }
 
-    private var orderIndex = 0
-
     init {
 
         SimpleButton("Edit Locations").childOf(window).constrain {

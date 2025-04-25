@@ -257,6 +257,10 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, registryAccess ->
             dispatcher.register(literal("catlas")
+                .executes {
+                    displayScreen = OptionsGui()
+                    return@executes 0
+                }
                 .then(
                     literal("config").executes {
                         displayScreen = CatlasConfig.gui()

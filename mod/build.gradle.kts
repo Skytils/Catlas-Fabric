@@ -171,15 +171,7 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to "SkytilsInstallerFrame",
-                    "FMLCorePlugin" to "gg.skytils.skytilsmod.tweaker.SkytilsLoadingPlugin",
-                    "FMLCorePluginContainsFMLMod" to true,
-                    "ForceLoadAsMod" to true,
-                    "MixinConfigs" to "mixins.skytils.json,mixins.skytils-events.json,mixins.skytils-init.json",
-                    "ModSide" to "CLIENT",
-                    "ModType" to "FML",
-                    "TweakClass" to "gg.skytils.skytilsmod.tweaker.SkytilsTweaker",
-                    "TweakOrder" to "0"
+                    "MixinConfigs" to "mixins.skytils.json,mixins.skytils-events.json,mixins.skytils-init.json"
                 )
             )
         }
@@ -188,6 +180,7 @@ tasks {
     }
     named<RemapJarTask>("remapJar") {
         archiveBaseName.set("Catlas")
+        archiveAppendix.set(platform.toString())
         inputFile.set(shadowJar.get().archiveFile)
         doLast {
             MessageDigest.getInstance("SHA-256").digest(archiveFile.get().asFile.readBytes())
@@ -198,6 +191,7 @@ tasks {
     }
     named<ShadowJar>("shadowJar") {
         archiveBaseName.set("Catlas")
+        archiveAppendix.set(platform.toString())
         archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowMe, shadowMeMod)
