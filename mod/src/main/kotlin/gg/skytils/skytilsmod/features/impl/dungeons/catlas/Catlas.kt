@@ -161,8 +161,8 @@ object Catlas : EventSubscriber {
                 doorShape.maxY,
                 doorShape.maxZ + it.z,
                 color.red / 255f,
-                color.blue / 255f,
                 color.green / 255f,
+                color.blue / 255f,
                 CatlasConfig.witherDoorFill
             )
         }
