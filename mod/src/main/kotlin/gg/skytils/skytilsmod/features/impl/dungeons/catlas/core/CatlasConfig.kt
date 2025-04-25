@@ -374,8 +374,8 @@ object CatlasConfig : Vigilant(
         subcategory = "Players",
         allowAlpha = true,
         i18nName = "catlas.config.colors.players.player_border_color_archer",
-        i18nCategory = "catlas.config.map",
-        i18nSubcategory = "catlas.config.map.render"
+        i18nCategory = "catlas.config.colors",
+        i18nSubcategory = "catlas.config.colors.players"
     )
     var colorPlayerArcher = Color(0, 0, 0, 255)
 
@@ -386,8 +386,8 @@ object CatlasConfig : Vigilant(
         subcategory = "Players",
         allowAlpha = true,
         i18nName = "catlas.config.colors.players.player_border_color_berserk",
-        i18nCategory = "catlas.config.map",
-        i18nSubcategory = "catlas.config.map.render"
+        i18nCategory = "catlas.config.colors",
+        i18nSubcategory = "catlas.config.colors.players"
     )
     var colorPlayerBerserk = Color(0, 0, 0, 255)
 
@@ -398,8 +398,8 @@ object CatlasConfig : Vigilant(
         subcategory = "Players",
         allowAlpha = true,
         i18nName = "catlas.config.colors.players.player_border_color_healer",
-        i18nCategory = "catlas.config.map",
-        i18nSubcategory = "catlas.config.map.render"
+        i18nCategory = "catlas.config.colors",
+        i18nSubcategory = "catlas.config.colors.players"
     )
     var colorPlayerHealer = Color(0, 0, 0, 255)
 
@@ -410,8 +410,8 @@ object CatlasConfig : Vigilant(
         subcategory = "Players",
         allowAlpha = true,
         i18nName = "catlas.config.colors.players.player_border_color_mage",
-        i18nCategory = "catlas.config.map",
-        i18nSubcategory = "catlas.config.map.render"
+        i18nCategory = "catlas.config.colors",
+        i18nSubcategory = "catlas.config.colors.players"
     )
     var colorPlayerMage = Color(0, 0, 0, 255)
 
@@ -422,8 +422,8 @@ object CatlasConfig : Vigilant(
         subcategory = "Players",
         allowAlpha = true,
         i18nName = "catlas.config.colors.players.player_border_color_tank",
-        i18nCategory = "catlas.config.map",
-        i18nSubcategory = "catlas.config.map.render"
+        i18nCategory = "catlas.config.colors",
+        i18nSubcategory = "catlas.config.colors.players"
     )
     var colorPlayerTank = Color(0, 0, 0, 255)
 
