@@ -31,9 +31,9 @@ import net.minecraft.util.Identifier
 import kotlin.jvm.optionals.getOrNull
 
 object LegacyIdProvider {
-    private val cache: MutableMap<Int, Int?> = Int2IntOpenHashMap()
+    private val cache: MutableMap<Int, Int> = Int2IntOpenHashMap().also { it.defaultReturnValue(Integer.MIN_VALUE) }
 
-    fun getLegacyId(state: BlockState): Int? {
+    fun getLegacyId(state: BlockState): Int {
         if (state.isAir) return 0
 
         val stateId = Block.getRawIdFromState(state)
@@ -47,7 +47,7 @@ object LegacyIdProvider {
             }
 
             return@getOrPut block2Legacy[state.block] ?: run {
-                val reqs = block2PropertyMatch[state.block] ?: return@getOrPut null
+                val reqs = block2PropertyMatch[state.block] ?: return@getOrPut Integer.MIN_VALUE
                 reqs.find { req ->
                     req.properties.all { (property, value) ->
                         val stateValue = state.get(property)
@@ -56,7 +56,7 @@ object LegacyIdProvider {
                         }
                         stateValue == value
                     }
-                }?.legacyId
+                }?.legacyId ?: Integer.MIN_VALUE
             }
         }
     }

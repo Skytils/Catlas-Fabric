@@ -40,7 +40,7 @@ import java.awt.Color
 import kotlin.math.max
 
 object HeightProvider : EventSubscriber {
-    val heightMap = Long2IntOpenHashMap()
+    val heightMap = Long2IntOpenHashMap().also { it.defaultReturnValue(Integer.MIN_VALUE) }
 
     override fun setup() {
         register(::onWorldUnload)
