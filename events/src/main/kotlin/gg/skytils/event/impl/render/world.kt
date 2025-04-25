@@ -24,6 +24,7 @@ import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.ObjectAllocator
+import net.minecraft.client.util.math.MatrixStack
 import org.joml.Matrix4f
 
 /**
@@ -37,4 +38,8 @@ class WorldDrawEvent(
     val positionMatrix: Matrix4f,
     val projectionMatrix: Matrix4f,
     val entityVertexConsumers: VertexConsumerProvider.Immediate
-) : Event()
+) : Event() {
+    val matrices = MatrixStack().also {
+        it.multiplyPositionMatrix(positionMatrix)
+    }
+}

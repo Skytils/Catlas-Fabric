@@ -134,11 +134,11 @@ object Catlas : EventSubscriber {
         val color = if (DungeonInfo.keys > 0) CatlasConfig.witherDoorKeyColor else CatlasConfig.witherDoorNoKeyColor
 
         val linesBuffer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espLines)
-        val matrices = MatrixStack()
-        matrices.translate(event.camera.pos.negate())
+        event.matrices.push()
+        event.matrices.translate(event.camera.pos.negate())
         doors.forEach {
             VertexRendering.drawOutline(
-                matrices,
+                event.matrices,
                 linesBuffer,
                 VoxelShapes.cuboid(doorShape),
                 it.x.toDouble(),
@@ -151,24 +151,22 @@ object Catlas : EventSubscriber {
 
         val triangleStripBuffer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espFilledBoxLayer)
         doors.forEach {
-            matrices.push()
-            matrices.translate(it.x.toDouble(), 0.0, it.z.toDouble())
             VertexRendering.drawFilledBox(
-                matrices,
+                event.matrices,
                 triangleStripBuffer,
-                doorShape.minX,
+                doorShape.minX + it.x,
                 doorShape.minY,
-                doorShape.minZ,
-                doorShape.maxX,
+                doorShape.minZ + it.z,
+                doorShape.maxX + it.x,
                 doorShape.maxY,
-                doorShape.maxZ,
+                doorShape.maxZ + it.z,
                 color.red / 255f,
                 color.blue / 255f,
                 color.green / 255f,
                 CatlasConfig.witherDoorFill
             )
-            matrices.pop()
         }
+        event.matrices.pop()
         // event.entityVertexConsumers.drawCurrentLayer()
     }
 

@@ -30,6 +30,8 @@ object CustomRenderLayers {
         VertexFormats.LINES,
         VertexFormat.DrawMode.LINES,
         1536,
+        false,
+        true,
         RenderLayer.MultiPhaseParameters.builder()
             .program(RenderPhase.LINES_PROGRAM)
             .lineWidth(RenderPhase.LineWidth(OptionalDouble.empty()))

@@ -67,14 +67,14 @@ object HeightProvider : EventSubscriber {
 
     fun onWorldDraw(event: WorldDrawEvent) {
         if (DevTools.getToggle("heightmap")) {
-            val matrices = MatrixStack()
-            matrices.translate(event.camera.pos.negate())
+            event.matrices.push()
+            event.matrices.translate(event.camera.pos.negate())
             val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
             for ((k, v) in heightMap) {
                 val pos = BlockPos.fromLong(k).withY(v)
                 if (!pos.isWithinDistance(event.camera.blockPos, 160.0)) continue
                 VertexRendering.drawOutline(
-                    matrices,
+                    event.matrices,
                     vertexConsumer,
                     VoxelShapes.cuboid(oneByOne),
                     pos.x.toDouble(),
@@ -83,6 +83,7 @@ object HeightProvider : EventSubscriber {
                     Color.RED.rgb
                 )
             }
+            event.matrices.pop()
         }
     }
 
