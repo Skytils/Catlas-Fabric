@@ -26,12 +26,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
 import gg.skytils.skytilsmod.utils.Utils
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import net.minecraft.registry.Registries
-import net.minecraft.state.property.Property
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import kotlin.math.roundToInt
@@ -42,18 +37,6 @@ object ScanUtils {
         mc.resourceManager.getResourceOrThrow(
             Identifier.of("catlas:rooms.json")
         ).inputStream.use(json::decodeFromStream)
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    val legacyItems: Map<String, Pair<Int, Int>> by lazy {
-        val legacyObj: JsonObject = mc.resourceManager.getResourceOrThrow(
-            Identifier.of("catlas:legacy.json")
-        ).inputStream.use(json::decodeFromStream)
-
-        val blocksObj = legacyObj["blocks"]!!.jsonObject
-        return@lazy blocksObj.entries.associate {
-            it.value.jsonPrimitive.content to it.key.split(":", limit = 2).let { it.first().toInt() to it.last().toInt() }
-        }
     }
 
     fun getRoomData(x: Int, z: Int): RoomData? {
@@ -87,24 +70,8 @@ object ScanUtils {
         for (y in height downTo 12) {
             val blockState = chunk.getBlockState(BlockPos(x, y, z))
             val id = if (blockState.isAir) 0 else {
-                val identifier = buildString {
-                    blockState
-                    append(Registries.BLOCK.getEntry(blockState.block).idAsString)
-                    if (!blockState.entries.isEmpty()) {
-                        append('[')
-                        append(
-                            blockState.entries.entries.joinToString(
-                                ",",
-                            ) { (property, value) ->
-                                // if (it == null) return@joinToString "<NULL>"
-                                property.name + "=" + getPropertyValueName(property, value)
-                            }
-                        )
-                        append(']')
-                    }
-                }
-                val mapped = legacyItems[identifier]?.first
-                println("Mapped ${identifier} to ${mapped}")
+                val mapped = LegacyIdProvider.getLegacyId(blockState)
+                println("Mapped ${blockState} to ${mapped}")
                 mapped
             }
             if (id == 0 && bedrock >= 2 && y < 69) {
@@ -123,10 +90,5 @@ object ScanUtils {
         }
         println(sb)
         return sb.toString().hashCode()
-    }
-
-    private fun <T : Comparable<T>> getPropertyValueName(property: Property<T>, value: Comparable<*>): String {
-        @Suppress("UNCHECKED_CAST")
-        return property.name(value as T)
     }
 }

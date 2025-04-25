@@ -39,6 +39,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomState
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
+import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.LegacyIdProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.features.impl.handlers.MayorInfo
 import gg.skytils.skytilsmod.gui.OptionsGui
@@ -228,6 +229,7 @@ object Skytils : CoroutineScope, EventSubscriber {
 
     fun loadComplete() {
         DataFetcher.preload()
+        LegacyIdProvider
         guiManager = GuiManager
         //#if FORGE
         //$$ jarFile = Loader.instance().modList.find { it.modId == MOD_ID }?.source

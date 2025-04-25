@@ -85,9 +85,10 @@ object DungeonScanner {
                 //#if MC==10809
                 //$$ if (!world.method_0_271(xPos shr 4, zPos shr 4).method_12229()) {
                 //#else
-                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(xPos), ChunkSectionPos.getSectionCoord(zPos))/*|| (HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE) <= 0*/) {
+                if (HeightProvider.getHeight(x, z) == null) {
                 //#endif
                     // The room being scanned has not been loaded in.
+                    println("chunk not loaded")
                     allChunksLoaded = false
                     continue
                 }
@@ -117,6 +118,7 @@ object DungeonScanner {
         if (allChunksLoaded) {
             DungeonInfo.roomCount = DungeonInfo.dungeonList.filter { it is Room && !it.isSeparator }.size
             hasScanned = true
+            UChat.chat("All chunks loaded")
         }
 
         lastScanTime = System.currentTimeMillis()
