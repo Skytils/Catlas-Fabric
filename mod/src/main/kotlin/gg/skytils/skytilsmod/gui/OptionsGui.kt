@@ -43,10 +43,9 @@ class OptionsGui(val parent: Screen? = null) :
         }
 
     init {
-
         SimpleButton("Edit Locations").childOf(window).constrain {
             x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
+            y = SiblingConstraint() + RelativeConstraint(0.075f)
             width = 200.pixels()
             height = 20.pixels()
         }.onMouseClick {
@@ -69,14 +68,6 @@ class OptionsGui(val parent: Screen? = null) :
             height = 20.pixels()
         }.onMouseClick {
             UDesktop.open(Skytils.modDir)
-        }
-        SimpleButton("Open Web Editor").childOf(window).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint() + 2.pixels()
-            width = 200.pixels()
-            height = 20.pixels()
-        }.onMouseClick {
-            UDesktop.browse(URI("https://editor.skytils.gg/"))
         }
         SimpleButton("Discord").childOf(window).constrain {
             x = basicXConstraint { window.getWidth() - this.getWidth() - 3 }

@@ -121,6 +121,7 @@ object Catlas : EventSubscriber {
         reset()
     }
 
+    private val doorShape = Box(-1.0, 69.0, -1.0, 2.0, 73.0, 2.0)
     fun onWorldRender(event: WorldDrawEvent) {
         if (!Utils.inDungeons || DungeonTimer.bossEntryTime != -1L || !CatlasConfig.boxWitherDoors) return
 
@@ -131,39 +132,36 @@ object Catlas : EventSubscriber {
         if (doors.isEmpty()) return
 
         val color = if (DungeonInfo.keys > 0) CatlasConfig.witherDoorKeyColor else CatlasConfig.witherDoorNoKeyColor
-        val aabb = Box(-1.0, 69.0, -1.0, 2.0, 73.0, 2.0)
 
+        val linesBuffer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espLines)
         val matrices = MatrixStack()
-        matrices.peek().positionMatrix.mul(event.positionMatrix)
-        matrices.push()
         matrices.translate(event.camera.pos.negate())
-        val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espLines)
         doors.forEach {
             VertexRendering.drawOutline(
                 matrices,
-                vertexConsumer,
-                VoxelShapes.cuboid(aabb),
+                linesBuffer,
+                VoxelShapes.cuboid(doorShape),
                 it.x.toDouble(),
                 0.0,
                 it.z.toDouble(),
                 color.withAlpha(CatlasConfig.witherDoorOutline).rgb
             )
         }
-        event.entityVertexConsumers.drawCurrentLayer()
+        // event.entityVertexConsumers.drawCurrentLayer()
 
-        val vertexConsumer1: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espFilledBoxLayer)
+        val triangleStripBuffer: VertexConsumer = event.entityVertexConsumers.getBuffer(CustomRenderLayers.espFilledBoxLayer)
         doors.forEach {
             matrices.push()
             matrices.translate(it.x.toDouble(), 0.0, it.z.toDouble())
             VertexRendering.drawFilledBox(
                 matrices,
-                vertexConsumer1,
-                aabb.minX,
-                aabb.minY,
-                aabb.minZ,
-                aabb.maxX,
-                aabb.maxY,
-                aabb.maxZ,
+                triangleStripBuffer,
+                doorShape.minX,
+                doorShape.minY,
+                doorShape.minZ,
+                doorShape.maxX,
+                doorShape.maxY,
+                doorShape.maxZ,
                 color.red / 255f,
                 color.blue / 255f,
                 color.green / 255f,
@@ -171,8 +169,7 @@ object Catlas : EventSubscriber {
             )
             matrices.pop()
         }
-        event.entityVertexConsumers.drawCurrentLayer()
-        matrices.pop()
+        // event.entityVertexConsumers.drawCurrentLayer()
     }
 
     fun onPuzzleReset(event: DungeonPuzzleResetEvent) {

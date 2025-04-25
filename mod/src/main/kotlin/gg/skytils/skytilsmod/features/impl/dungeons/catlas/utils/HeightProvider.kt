@@ -63,28 +63,26 @@ object HeightProvider : EventSubscriber {
         }
     }
 
+    private val oneByOne = Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+
     fun onWorldDraw(event: WorldDrawEvent) {
         if (DevTools.getToggle("heightmap")) {
+            val matrices = MatrixStack()
+            matrices.translate(event.camera.pos.negate())
             val vertexConsumer: VertexConsumer = event.entityVertexConsumers.getBuffer(RenderLayer.getLines())
             for ((k, v) in heightMap) {
                 val pos = BlockPos.fromLong(k).withY(v)
                 if (!pos.isWithinDistance(event.camera.blockPos, 160.0)) continue
-                val matrices = MatrixStack()
-                matrices.peek().positionMatrix.mul(event.positionMatrix)
-                matrices.push()
-                matrices.translate(pos.x - event.camera.pos.x, pos.y - event.camera.pos.y, pos.z - event.camera.pos.z)
                 VertexRendering.drawOutline(
                     matrices,
                     vertexConsumer,
-                    VoxelShapes.cuboid(Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)),
-                    0.0,
-                    0.0,
-                    0.0,
+                    VoxelShapes.cuboid(oneByOne),
+                    pos.x.toDouble(),
+                    pos.y.toDouble(),
+                    pos.z.toDouble(),
                     Color.RED.rgb
                 )
-                matrices.pop()
             }
-            event.entityVertexConsumers.drawCurrentLayer()
         }
     }
 
