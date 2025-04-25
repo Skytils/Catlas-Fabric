@@ -20,18 +20,18 @@ package gg.skytils.skytilsmod.utils
 
 import gg.essential.elementa.state.v2.State
 import gg.essential.universal.wrappers.UPlayer
-import net.minecraft.client.network.ClientPlayerEntity
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen
+import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.item.ItemStack
+import net.minecraft.text.Text
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
-
-import net.fabricmc.loader.api.FabricLoader
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.text.Text
+import java.util.*
 
 val isDeobfuscatedEnvironment = State {
     FabricLoader.getInstance().isDevelopmentEnvironment
@@ -66,4 +66,12 @@ val ItemStack.displayNameStr: String
         //#endif
 
 val Text.formattedText: String
-    get() = ControlCodeVisitor().also { visitor -> visit(visitor, style) }.getFormattedString()
+    get() = buildString {
+        append(serializeFormattingToString(style))
+        content.visit<String> {
+            append(it)
+            Optional.empty()
+        }
+        append("§r")
+        siblings.forEach { append(it.formattedText) }
+    }

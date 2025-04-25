@@ -22,53 +22,40 @@ import net.minecraft.text.CharacterVisitor
 import net.minecraft.text.StringVisitable
 import net.minecraft.text.Style
 import net.minecraft.util.Formatting
-import java.util.Optional
+import java.util.*
 
 /**
  * This class visits a text instance and can be used to retrieve a version of the text
  * that attempts to use legacy control codes to represent colors and formatting
  */
+@Deprecated("This class can't handle PlainTextContent.empty the same way as legacy does")
 class ControlCodeVisitor : CharacterVisitor, StringVisitable.StyledVisitor<String> {
     private val builder = StringBuilder()
-    private var prevStyle: Style? = null
     override fun accept(index: Int, style: Style, codePoint: Int): Boolean {
-        if (style != prevStyle) {
-            prevStyle = style
-            builder.append(serializeFormattingToString(style))
-        }
-
+        builder.append(serializeFormattingToString(style))
         builder.append(codePoint.toChar())
+        builder.append("§r")
         return true
     }
 
     override fun accept(style: Style, asString: String): Optional<String> {
-        if (style != prevStyle) {
-            prevStyle = style
-            builder.append(serializeFormattingToString(style))
-        }
-
+        builder.append(serializeFormattingToString(style))
         builder.append(asString)
+        builder.append("§r")
         return Optional.empty()
     }
 
-    private fun serializeFormattingToString(style: Style): String {
-        val builder = StringBuilder("§r")
-
-        when {
-            style.isBold -> builder.append("§l")
-            style.isItalic -> builder.append("§o")
-            style.isUnderlined -> builder.append("§n")
-            style.isStrikethrough -> builder.append("§m")
-            style.isObfuscated -> builder.append("§k")
-        }
-
-        style.color?.name?.let(Formatting::byName)?.let(builder::append)
-
-        return builder.toString()
-    }
-
-    fun getFormattedString() = builder.append("§r").toString()
+    fun getFormattedString() = builder.toString()
 
     // Just use getString() on the text instance lol
     fun getUnformattedString() = builder.toString().stripControlCodes()
+}
+
+fun serializeFormattingToString(style: Style): String = buildString {
+    style.color?.name?.let(Formatting::byName)?.let(::append)
+    if (style.isBold) append("§l")
+    if (style.isItalic) append("§o")
+    if (style.isUnderlined) append("§n")
+    if (style.isObfuscated) append("§k")
+    if (style.isStrikethrough) append("§m")
 }
