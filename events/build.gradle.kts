@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import net.fabricmc.loom.task.AbstractRemapJarTask
+import net.fabricmc.loom.task.RemapJarTask
 import org.apache.tools.ant.filters.FixCrLfFilter
 
 plugins {
@@ -36,12 +38,8 @@ dependencies {
 group = "gg.skytils.events"
 
 loom {
-    mods {
-        create("skytils-events") {
-            sourceSet(sourceSets["main"])
-        }
-    }
     mixin {
+        useLegacyMixinAp.set(true)
         defaultRefmapName = "mixins.skytils-events.refmap.json"
     }
 }
@@ -56,3 +54,14 @@ tasks.withType<AbstractArchiveTask> {
     isPreserveFileTimestamps = false
     isReproducibleFileOrder = true
 }
+
+tasks.named<Jar>("jar") {
+    //exclude("**/mixins.skytils-events.refmap.json")
+}
+
+//tasks.named<RemapJarTask>("remapJar") {
+//    from(layout.buildDirectory.dir("classes/java/main")) {
+//        include("**/mixins.skytils-events.refmap.json")
+//        into("")
+//    }
+//}

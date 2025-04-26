@@ -140,9 +140,9 @@ dependencies {
     include(implementation("org.brotli:dec:0.1.2")!!)
 
     //FIXME
-    include(modImplementation(project(":events:$platform")) {
-        excludeKotlin()
-    })
+    shadowMe(project(":events:$platform")) {
+        isTransitive = false
+    }
     shadowMe(project(":vigilance")) {
         excludeKotlin()
     }
