@@ -68,7 +68,7 @@ val ItemStack.displayNameStr: String
 val Text.formattedText: String
     get() = buildString {
         append(serializeFormattingToString(style))
-        content.visit<String> {
+        this@formattedText.visit<String> {
             append(it)
             Optional.empty()
         }

@@ -106,10 +106,14 @@ dependencies {
     }
     modCompileOnly("gg.essential:universalcraft-${platform}:396")
 
-    include(implementation("gg.essential:elementa-unstable-layoutdsl:676")!!)
+    include(implementation("gg.essential:elementa-unstable-layoutdsl:676") {
+        excludeKotlin()
+        exclude(module = "elementa-1.8.9-forge")
+    })
 
     include(implementation("dev.dediamondpro:minemark-elementa:1.2.3"){
         exclude(module = "elementa-1.8.9-forge")
+        excludeKotlin()
     })
 
     shadowMe(platform(kotlin("bom")))
@@ -135,15 +139,23 @@ dependencies {
 
     include(implementation("org.brotli:dec:0.1.2")!!)
 
-    include(modImplementation(project(":events:$platform"))!!)
-    shadowMe(project(":vigilance"))
-    shadowMe("gg.skytils.hypixel.types:types")
-    shadowMe("gg.skytils.skytilsws.shared:ws-shared")
+    include(modImplementation(project(":events:$platform")) {
+        excludeKotlin()
+    })
+    shadowMe(project(":vigilance")) {
+        excludeKotlin()
+    }
+    shadowMe("gg.skytils.hypixel.types:types") {
+        excludeKotlin()
+    }
+    shadowMe("gg.skytils.skytilsws.shared:ws-shared") {
+        excludeKotlin()
+    }
 
     compileOnly("net.hypixel:mod-api:1.0.1")
 
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-rc.1")!!)!!)
-    // annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.0-rc.1")!!)!!)
+    annotationProcessor("net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7")
     // compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
@@ -202,8 +214,6 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowMe, shadowMeMod)
 
-        relocate("dev.falsehonesty.asmhelper", "gg.skytils.asmhelper")
-        relocate("com.llamalad7.mixinextras", "gg.skytils.mixinextras")
         relocate("io.ktor", "gg.skytils.ktor")
         relocate("gg.essential.vigilance", "gg.skytils.vigilance")
         relocate("net.hypixel.modapi.tweaker", "gg.skytils.hypixel-net.modapi.tweaker")
@@ -283,5 +293,8 @@ fun JavaVersion.asInt() = this.ordinal + 1
 fun <T : ModuleDependency> T.excludeKotlin(): T {
     exclude(group = "org.jetbrains.kotlin")
     exclude(module = "kotlinx-coroutines-core")
+    exclude(module = "kotlinx-serialization-core")
+    exclude(module = "kotlinx-serialization-json")
+    exclude(module = "kotlinx-serialization-cbor")
     return this
 }

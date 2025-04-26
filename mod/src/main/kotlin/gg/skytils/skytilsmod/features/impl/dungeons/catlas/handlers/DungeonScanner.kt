@@ -122,7 +122,6 @@ object DungeonScanner {
 
     private fun scanRoom(world: World, x: Int, z: Int, row: Int, column: Int): Tile? {
         val height = HeightProvider.getHeight(x, z) ?: Integer.MIN_VALUE
-        println(height)
 
         if (height <= 0) return null
 

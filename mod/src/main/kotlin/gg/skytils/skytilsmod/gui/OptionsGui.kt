@@ -36,7 +36,7 @@ class OptionsGui(val parent: Screen? = null) :
     WindowScreen(ElementaVersion.V2) {
 
     private val skytilsText: UIText =
-        UIText("Skytils", shadow = false).childOf(window).constrain {
+        UIText(Skytils.MOD_NAME, shadow = false).childOf(window).constrain {
             x = CenterConstraint()
             y = RelativeConstraint(0.075f)
             textScale = RelativeWindowConstraint(0.025f)

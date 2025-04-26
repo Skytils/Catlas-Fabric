@@ -47,7 +47,6 @@ import gg.skytils.skytilsmod.gui.ReopenableGUI
 import gg.skytils.skytilsmod.gui.editing.ElementaEditingGui
 import gg.skytils.skytilsmod.listeners.DungeonListener
 import gg.skytils.skytilsmod.listeners.ServerPayloadInterceptor
-import gg.skytils.skytilsmod.tweaker.DependencyLoader
 import gg.skytils.skytilsmod.utils.*
 import gg.skytils.skytilsws.client.WSClient
 import io.ktor.client.*
@@ -96,9 +95,8 @@ object Skytils : CoroutineScope, EventSubscriber {
     }
 
     val modDir by lazy {
-        File(File(mc.runDirectory, "config"), "skytils").also {
+        File(File(mc.runDirectory, "config"), MOD_ID).also {
             it.mkdirs()
-            File(it, "trackers").mkdirs()
         }
     }
 
@@ -223,7 +221,7 @@ object Skytils : CoroutineScope, EventSubscriber {
 
     val prefix = "§9§lSkytils §8»"
     val successPrefix = "§a§lSkytils §8»"
-    val failPrefix = "§c§lSkytils (${Reference.VERSION}) §8»"
+    val failPrefix = "§c§lSkytils (${VERSION}) §8»"
 
     var trustClientTime = false
 
