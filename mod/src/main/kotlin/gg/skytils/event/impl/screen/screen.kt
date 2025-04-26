@@ -1,6 +1,6 @@
 /*
  * Skytils - Hypixel Skyblock Quality of Life Mod
- * Copyright (C) 2020-2023 Skytils
+ * Copyright (C) 2020-2025 Skytils
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,29 +15,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import org.apache.tools.ant.filters.FixCrLfFilter
 
-plugins {
-    kotlin("jvm")
-}
+package gg.skytils.event.impl.screen
 
-repositories {
-    mavenCentral()
-}
+import gg.skytils.event.CancellableEvent
+import net.minecraft.client.gui.screen.Screen
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-}
+/**
+ * [gg.skytils.event.mixins.MixinMinecraft.openScreen]
+ */
+class ScreenOpenEvent(var screen: Screen?) : CancellableEvent()
 
-group = "gg.skytils.events"
+class ScreenKeyInputEvent(val screen: Screen, val keyCode: Int) : CancellableEvent()
 
-tasks.processResources {
-    filesMatching("**/*.json") {
-        filter(FixCrLfFilter::class, "eol" to FixCrLfFilter.CrLf.newInstance("lf"))
-    }
-}
+class ScreenMouseInputEvent(val screen: Screen, val mouseX: Double, val mouseY: Double, val button: Int) : CancellableEvent()
 
-tasks.withType<AbstractArchiveTask> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
+class ScreenDrawEvent(val screen: Screen, val mouseX: Double, val mouseY: Double) : CancellableEvent()

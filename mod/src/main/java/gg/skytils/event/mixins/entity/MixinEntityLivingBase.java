@@ -1,6 +1,6 @@
 /*
  * Skytils - Hypixel Skyblock Quality of Life Mod
- * Copyright (C) 2020-2023 Skytils
+ * Copyright (C) 2020-2025 Skytils
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,29 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import org.apache.tools.ant.filters.FixCrLfFilter
 
-plugins {
-    kotlin("jvm")
-}
+package gg.skytils.event.mixins.entity;
 
-repositories {
-    mavenCentral()
-}
+import gg.skytils.event.EventsKt;
+import gg.skytils.event.impl.entity.LivingEntityDeathEvent;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-}
-
-group = "gg.skytils.events"
-
-tasks.processResources {
-    filesMatching("**/*.json") {
-        filter(FixCrLfFilter::class, "eol" to FixCrLfFilter.CrLf.newInstance("lf"))
+@Mixin(LivingEntity.class)
+public class MixinEntityLivingBase {
+    @Inject(method = "onDeath", at = @At("HEAD"))
+    public void onDeath(DamageSource source, CallbackInfo ci) {
+        EventsKt.postSync(new LivingEntityDeathEvent((LivingEntity) (Object) this));
     }
-}
-
-tasks.withType<AbstractArchiveTask> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
 }

@@ -1,6 +1,6 @@
 /*
  * Skytils - Hypixel Skyblock Quality of Life Mod
- * Copyright (C) 2020-2023 Skytils
+ * Copyright (C) 2020-2025 Skytils
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,29 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import org.apache.tools.ant.filters.FixCrLfFilter
 
-plugins {
-    kotlin("jvm")
-}
+package gg.skytils.event.impl.world
 
-repositories {
-    mavenCentral()
-}
+import gg.skytils.event.Event
+import net.minecraft.block.BlockState
+import net.minecraft.util.math.BlockPos
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-}
-
-group = "gg.skytils.events"
-
-tasks.processResources {
-    filesMatching("**/*.json") {
-        filter(FixCrLfFilter::class, "eol" to FixCrLfFilter.CrLf.newInstance("lf"))
-    }
-}
-
-tasks.withType<AbstractArchiveTask> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
+/**
+ * [gg.skytils.event.mixins.world.MixinChunk.onBlockChange]
+ */
+class BlockStateUpdateEvent(val pos: BlockPos, val old: BlockState, val update: BlockState) : Event()

@@ -49,19 +49,9 @@ rootProject.buildFileName = "root.gradle.kts"
 // events
 include(":events")
 project(":events").apply {
-    projectDir = file("events")
-    buildFileName = "root.gradle.kts"
+    projectDir = file("./events")
 }
-listOf(
-    "1.21.4-fabric",
-    "1.21.5-fabric"
-).forEach { version ->
-    include(":events:$version")
-    project(":events:$version").apply {
-        projectDir = file("events/versions/$version")
-        buildFileName = "../../build.gradle.kts"
-    }
-}
+
 // mod
 include(":mod")
 project(":mod").apply {

@@ -1,6 +1,6 @@
 /*
  * Skytils - Hypixel Skyblock Quality of Life Mod
- * Copyright (C) 2020-2023 Skytils
+ * Copyright (C) 2020-2025 Skytils
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,29 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import org.apache.tools.ant.filters.FixCrLfFilter
 
-plugins {
-    kotlin("jvm")
-}
+package gg.skytils.event.impl.play
 
-repositories {
-    mavenCentral()
-}
+import gg.skytils.event.CancellableEvent
+import net.minecraft.text.Text
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-}
+/**
+ * [gg.skytils.event.mixins.network.MixinNetHandlerPlayClient.onChat]
+ */
+class ChatMessageReceivedEvent(var message: Text) : CancellableEvent()
 
-group = "gg.skytils.events"
+/**
+ * [gg.skytils.event.mixins.gui.MixinGuiScreen.onSendChatMessage]
+ */
+class ChatMessageSentEvent(val message: String, val addToHistory: Boolean) : CancellableEvent()
 
-tasks.processResources {
-    filesMatching("**/*.json") {
-        filter(FixCrLfFilter::class, "eol" to FixCrLfFilter.CrLf.newInstance("lf"))
-    }
-}
-
-tasks.withType<AbstractArchiveTask> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
+/**
+ * [gg.skytils.event.mixins.network.MixinNetHandlerPlayClient.onActionbar]
+ */
+class ActionBarReceivedEvent(var message: Text) : CancellableEvent()

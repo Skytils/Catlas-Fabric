@@ -139,8 +139,7 @@ dependencies {
 
     include(implementation("org.brotli:dec:0.1.2")!!)
 
-    //FIXME
-    shadowMe(project(":events:$platform")) {
+    shadowMe(project(":events")) {
         isTransitive = false
     }
     shadowMe(project(":vigilance")) {
