@@ -32,8 +32,8 @@ import java.util.Enumeration;
 
 public class Reference {
     public static String dataUrl = "https://data.skytils.gg/";
-    public static final String MOD_ID = "skytils";
-    public static final String MOD_NAME = "Skytils";
+    public static final String MOD_ID = "catlas";
+    public static final String MOD_NAME = "Catlas";
     @NotNull
     public static final String VERSION = getVersion();
     public static final String UNKNOWN_VERSION = "unknown";
@@ -48,7 +48,7 @@ public class Reference {
                     JsonArray jsonArray = gson.fromJson(new InputStreamReader(is), JsonArray.class);
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject json = jsonArray.get(i).getAsJsonObject();
-                        if (json.get("modid").getAsString().equals("skytils")) {
+                        if (json.get("modid").getAsString().equals(Reference.MOD_ID)) {
                             String version = json.get("version").getAsString();
                             return version.isEmpty() ? UNKNOWN_VERSION : version;
                         }

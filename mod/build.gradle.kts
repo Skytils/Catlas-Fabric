@@ -69,7 +69,7 @@ loom {
         defaultRefmapName = "mixins.skytils.refmap.json"
     }
     mods {
-        create("skytils") {
+        create("catlas") {
             sourceSet(sourceSets["main"])
         }
     }
@@ -139,6 +139,7 @@ dependencies {
 
     include(implementation("org.brotli:dec:0.1.2")!!)
 
+    //FIXME
     include(modImplementation(project(":events:$platform")) {
         excludeKotlin()
     })

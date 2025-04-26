@@ -20,7 +20,7 @@ plugins {
     id("gg.essential.multi-version.root")
 }
 
-version = "2.0.0"
+version = "0.1.0"
 
 preprocess {
     val fabric12104 = createNode("1.21.4-fabric", 12104, "yarn")

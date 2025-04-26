@@ -200,7 +200,7 @@ object Skytils : CoroutineScope, EventSubscriber {
         }
         install(HttpTimeout)
         install(UserAgent) {
-            agent = "Skytils/$VERSION"
+            agent = "${MOD_ID.toTitleCase()}/$VERSION"
         }
 
         engine {

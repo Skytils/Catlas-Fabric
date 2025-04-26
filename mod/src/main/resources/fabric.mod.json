@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "skytils",
+  "id": "catlas",
   "version": "${version}",
-  "name": "Skytils",
-  "description": "Skytils is a Hypixel Skyblock Quality of Life mod for Fabric!",
+  "name": "Catlas",
+  "description": "Catlas is a Hypixel Skyblock Dungeon Map!",
   "authors": [
     "My-Name-Is-Jeff",
     "Sychic"

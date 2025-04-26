@@ -22,6 +22,7 @@ import gg.essential.universal.UChat
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.utils.DevTools
+import gg.skytils.skytilsmod.utils.toTitleCase
 import gg.skytils.skytilsws.shared.SkytilsWS
 import gg.skytils.skytilsws.shared.packet.C2SPacketConnect
 import gg.skytils.skytilsws.shared.packet.Packet
@@ -32,8 +33,8 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.util.zip.Deflater
 
@@ -42,7 +43,7 @@ object WSClient {
     val wsClient by lazy {
         HttpClient(CIO) {
             install(UserAgent) {
-                agent = "Skytils/${Skytils.VERSION} SkytilsWS/${SkytilsWS.version}"
+                agent = "${Skytils.MOD_ID.toTitleCase()}/${Skytils.VERSION} SkytilsWS/${SkytilsWS.version}"
             }
 
             install(WebSockets) {
