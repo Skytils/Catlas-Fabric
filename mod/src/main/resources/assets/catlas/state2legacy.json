@@ -1,4 +1,15 @@
 {
+  "//copyright_notice": [
+    "DO NOT REMOVE THIS ENTRY. REMOVAL IS A VIOLATION OF THE LICENSE.",
+    "Copyright (C) 2025 My-Name-Is-Jeff",
+    "This file is part of Skytils.",
+    "Skytils is licensed under the GNU Affero General Public License v3.0.",
+    "You can redistribute it and/or modify it under the terms of the GNU AGPLv3.",
+    "You should have received a copy of the GNU Affero General Public License along with this program.",
+    "If not, see <https://github.com/Skytils/SkytilsMod/blob/1.x/LICENSE.md>.",
+    "Skytils would like to thank me4502 for her work on compiling the original legacy",
+    ".json file, which is distributed under the GNU General Public License v3.0."
+  ],
   "minecraft:air": 0,
   "minecraft:stone": 1,
   "minecraft:granite": 1,

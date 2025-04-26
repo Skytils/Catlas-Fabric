@@ -77,6 +77,7 @@ object LegacyIdProvider {
 
 
         legacyObj.forEach { (k, v) ->
+            if (k.startsWith("//")) return@forEach
             val id = when (v) {
                 is JsonPrimitive -> v.intOrNull
 
