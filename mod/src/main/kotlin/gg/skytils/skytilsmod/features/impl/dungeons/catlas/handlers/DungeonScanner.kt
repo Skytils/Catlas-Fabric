@@ -27,6 +27,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScann
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.HeightProvider
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.utils.ScanUtils
 import gg.skytils.skytilsmod.listeners.DungeonListener
+import gg.skytils.skytilsmod.utils.DevTools
 import gg.skytils.skytilsmod.utils.SBInfo
 import gg.skytils.skytilsmod.utils.printDevMessage
 import gg.skytils.skytilsws.shared.packet.C2SPacketDungeonRoom
@@ -113,7 +114,7 @@ object DungeonScanner {
         if (allChunksLoaded) {
             DungeonInfo.roomCount = DungeonInfo.dungeonList.filter { it is Room && !it.isSeparator }.size
             hasScanned = true
-            UChat.chat("All chunks loaded")
+            if (DevTools.getToggle("debug")) UChat.chat("All chunks loaded")
         }
 
         lastScanTime = System.currentTimeMillis()
@@ -134,7 +135,7 @@ object DungeonScanner {
                 val roomCore = ScanUtils.getCore(x, z)
                 val roomData = ScanUtils.getRoomData(roomCore)
                 if (roomData == null) {
-                    println("${roomCore} doesn't map to room data")
+                    if (DevTools.getToggle("debug")) println("${roomCore} doesn't map to room data")
                 }
                 Room(x, z, roomData ?: return null).apply {
                     core = roomCore

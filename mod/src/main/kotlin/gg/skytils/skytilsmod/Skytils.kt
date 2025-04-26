@@ -329,6 +329,11 @@ object Skytils : CoroutineScope, EventSubscriber {
                         DevTools.toggle("heightmap")
                         return@executes 0
                     }
+                ).then(
+                    literal("debug").executes {
+                        DevTools.toggle("debug")
+                        return@executes 0
+                    }
                 )
             )
         }

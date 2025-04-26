@@ -24,6 +24,7 @@ import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.Room
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.map.RoomData
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonInfo
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.handlers.DungeonScanner
+import gg.skytils.skytilsmod.utils.DevTools
 import gg.skytils.skytilsmod.utils.Utils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
@@ -71,7 +72,7 @@ object ScanUtils {
             val blockState = chunk.getBlockState(BlockPos(x, y, z))
             val id = if (blockState.isAir) 0 else {
                 val mapped = LegacyIdProvider.getLegacyId(blockState)
-                println("Mapped ${blockState} to ${mapped}")
+                if (DevTools.getToggle("debug")) println("Mapped ${blockState} to ${mapped}")
                 mapped
             }
             if (id == 0 && bedrock >= 2 && y < 69) {
@@ -88,7 +89,7 @@ object ScanUtils {
 
             sb.append(id)
         }
-        println(sb)
+        if (DevTools.getToggle("debug")) println(sb)
         return sb.toString().hashCode()
     }
 }
