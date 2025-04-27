@@ -27,10 +27,7 @@ enum class EventPriority {
         override val next: EventPriority = this
 
         override suspend fun <T : Event> post(event: T) {
-            handlers[event.javaClass]?.forEach { handler ->
-                @Suppress("UNCHECKED_CAST")
-                (handler as Handler<T>).invoke(event)
-            }
+            invokeHandlers(event)
         }
     },
     Low {
@@ -60,11 +57,19 @@ enum class EventPriority {
         }
 
     internal open suspend fun <T : Event> post(event: T) {
-        handlers[event.javaClass]?.forEach { handler ->
-            @Suppress("UNCHECKED_CAST")
-            (handler as Handler<T>).invoke(event)
-        }
+        invokeHandlers(event)
         if (!event.continuePropagation()) return
         next.post(event)
+    }
+
+    internal suspend fun  <T : Event> invokeHandlers(event: T) {
+        handlers[event.javaClass]?.forEach { handler ->
+            @Suppress("UNCHECKED_CAST")
+            runCatching {
+                (handler as Handler<T>).invoke(event)
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
     }
 }
