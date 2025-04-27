@@ -152,7 +152,7 @@ dependencies {
         excludeKotlin()
     }
 
-    compileOnly("net.hypixel:mod-api:1.0.1")
+    include(implementation("net.hypixel:mod-api:1.0.1")!!)
 
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.0-rc.1")!!)!!)
     annotationProcessor("net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7")
@@ -253,9 +253,6 @@ tasks {
         kotlinDaemonJvmArguments.set(
             listOf(
                 "-Xmx2G",
-                "-Dkotlin.enableCacheBuilding=true",
-                "-Dkotlin.useParallelTasks=true",
-                "-Dkotlin.enableFastIncremental=true",
                 //"-Xbackend-threads=0"
             )
         )
