@@ -22,6 +22,7 @@ import gg.essential.universal.UChat
 import gg.essential.universal.UDesktop
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.TickEvent
+import gg.skytils.event.impl.network.ClientConnectEvent
 import gg.skytils.event.impl.network.ClientDisconnectEvent
 import gg.skytils.event.impl.screen.ScreenOpenEvent
 import gg.skytils.event.register
@@ -360,10 +361,8 @@ object Skytils : CoroutineScope, EventSubscriber {
         }
     }
 
-    fun onPacket(event: MainThreadPacketReceiveEvent<*>) {
-        if (event.packet is GameJoinS2CPacket) {
-            WSClient.openConnection()
-        }
+    fun onConnect(event: ClientConnectEvent) {
+        WSClient.openConnection()
     }
 
     fun onDisconnect(event: ClientDisconnectEvent) {
@@ -417,7 +416,7 @@ object Skytils : CoroutineScope, EventSubscriber {
     override fun setup() {
         register(::onTick, gg.skytils.event.EventPriority.Highest)
         register(::onDisconnect)
-        register(::onPacket)
+        register(::onConnect)
         register(::onSendPacket)
         register(::onGuiChange)
     }
