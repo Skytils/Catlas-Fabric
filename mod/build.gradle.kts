@@ -30,6 +30,7 @@ plugins {
     `maven-publish`
 }
 
+version = "0.1.0+${platform}"
 group = "gg.skytils"
 
 repositories {
@@ -203,7 +204,6 @@ tasks {
     }
     named<RemapJarTask>("remapJar") {
         archiveBaseName.set("Catlas")
-        archiveAppendix.set(platform.toString())
         inputFile.set(shadowJar.get().archiveFile)
         doLast {
             MessageDigest.getInstance("SHA-256").digest(archiveFile.get().asFile.readBytes())
@@ -214,7 +214,6 @@ tasks {
     }
     named<ShadowJar>("shadowJar") {
         archiveBaseName.set("Catlas")
-        archiveAppendix.set(platform.toString())
         archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowMe, shadowMeMod)
