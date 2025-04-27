@@ -18,7 +18,6 @@
 
 package gg.skytils.skytilsmod
 
-import gg.essential.api.EssentialAPI
 import gg.essential.universal.UChat
 import gg.essential.universal.UDesktop
 import gg.skytils.event.EventSubscriber
@@ -408,9 +407,7 @@ object Skytils : CoroutineScope, EventSubscriber {
                             (msg.transmitTimestamp - destinationTimestamp)) / 2
 
                 println("Got local clock offset: $localClockOffset")
-                if (abs(localClockOffset) > 3) {
-                    EssentialAPI.getNotifications().push("Skytils", "Your system time is inaccurate.", 3f)
-                } else {
+                if (abs(localClockOffset) <= 3) {
                     trustClientTime = true
                 }
             }

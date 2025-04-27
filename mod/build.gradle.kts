@@ -178,11 +178,16 @@ tasks {
     }
     processResources {
         dependsOn(compileJava)
-        filesMatching("mcmod.info") {
-            expand(mapOf(
-                "version" to version,
-                "mcversion" to platform.mcVersionStr
-            ))
+        setOf("mcmod.info", "fabric.mod.json").forEach {
+            filesMatching(it) {
+                expand(
+                    mapOf(
+                        "version" to version,
+                        "mcversion" to platform.mcVersionStr,
+                        "javaversion" to platform.javaVersion.asInt(),
+                    )
+                )
+            }
         }
     }
     named<Jar>("jar") {
