@@ -41,6 +41,7 @@ public abstract class MixinChunk {
                                //#else
                                //$$ int flags,
                                //#endif
+                               //#endif
                                CallbackInfoReturnable<BlockState> cir) {
         BlockState old = this.getBlockState(pos);
         if (old != state) {
