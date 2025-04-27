@@ -30,7 +30,7 @@ plugins {
     `maven-publish`
 }
 
-version = "0.1.0+${platform}"
+version = "0.1.1+${platform}"
 group = "gg.skytils"
 
 repositories {
