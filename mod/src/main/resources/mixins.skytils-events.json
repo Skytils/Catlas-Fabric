@@ -24,7 +24,6 @@
   "verbose": true,
   "mixins": [
     "entity.MixinEntityLivingBase",
-    "item.MixinItemStack",
     "world.MixinChunk"
   ]
 }

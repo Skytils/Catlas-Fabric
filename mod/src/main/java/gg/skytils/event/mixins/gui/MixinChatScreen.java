@@ -24,14 +24,14 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
 public class MixinChatScreen {
     @Inject(method = "sendMessage", at = @At("HEAD"), cancellable = true)
-    public void onSendChatMessage(String chatText, boolean addToHistory, CallbackInfoReturnable<Boolean> cir) {
+    public void onSendChatMessage(String chatText, boolean addToHistory, CallbackInfo ci) {
         if (EventsKt.postCancellableSync(new ChatMessageSentEvent(chatText, addToHistory))) {
-            cir.setReturnValue(true); // returning a value of false prevents the chat window from closing, but this wouldn't match 1.8.9 behavior
+            ci.cancel();
         }
     }
 }

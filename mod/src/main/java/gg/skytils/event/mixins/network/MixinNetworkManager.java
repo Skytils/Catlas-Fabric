@@ -43,7 +43,7 @@ public class MixinNetworkManager {
         }
     }
 
-    @Inject(method = "handleDisconnection", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/listener/PacketListener;onDisconnected(Lnet/minecraft/text/Text;)V"))
+    @Inject(method = "handleDisconnection", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/listener/PacketListener;onDisconnected(Lnet/minecraft/network/DisconnectionInfo;)V"))
     public void onDisconnect(CallbackInfo ci) {
         if (this.packetListener instanceof ClientPlayNetworkHandler) {
             skytils$postDisconnectEvent();
