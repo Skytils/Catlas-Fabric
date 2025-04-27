@@ -26,6 +26,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -129,6 +130,7 @@ public abstract class MixinGuiContainer extends Screen {
     //#if MC<12000
     //$$ @Inject(method = "method_2383", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickSlot(IIIILnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     //#endif
+    @Unique
     private void onMouseClickEvent(Slot slot, int slotId, int clickedButton, int clickType, CallbackInfo ci) {
         if (EventsKt.postCancellableSync(new GuiContainerSlotClickEvent((HandledScreen) (Object) this, this.handler, slot, slotId, clickedButton, clickType))) {
             ci.cancel();
