@@ -155,7 +155,7 @@ dependencies {
 
     include(implementation("net.hypixel:mod-api:1.0.1")!!)
 
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.0-rc.1")!!)!!)
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.0-rc.3")!!)!!)
     annotationProcessor("net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7")
     // compileOnly("org.spongepowered:mixin:0.8.5")
 }
